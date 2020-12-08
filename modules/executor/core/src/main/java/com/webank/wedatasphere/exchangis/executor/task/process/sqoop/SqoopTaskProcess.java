@@ -76,7 +76,7 @@ public class SqoopTaskProcess extends AbstractJavaInternalTaskProcess implements
 
         }, " ");
         if(needToSwitchUser(execUser)){
-            command = "sudo su " + execUser + " -c \"" + command +"\"";
+            command = "sudo su - " + execUser + " -c \"" + command +"\"";
         }
         LOG.info("Run command:{}", command);
         Map<String, String> env = new HashMap<>(1);

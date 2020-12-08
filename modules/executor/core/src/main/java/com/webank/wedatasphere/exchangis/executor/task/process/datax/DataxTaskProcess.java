@@ -151,7 +151,7 @@ public class DataxTaskProcess extends AbstractJavaInternalTaskProcess {
             command = builder.build();
         }
         if(needToSwitchUser(execUser)){
-            command = "sudo su " + execUser + " -c \"" + command + "\"";
+            command = "sudo su - " + execUser + " -c \"" + command + "\"";
         }
         LOG.info("Run Command:{}", command);
         Map<String,String> env = new HashMap<>(4);
