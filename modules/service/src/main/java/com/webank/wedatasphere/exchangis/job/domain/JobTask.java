@@ -47,7 +47,7 @@ public class JobTask {
      * Trigger type: scheduler or api
      */
     private String triggerType;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date triggerTime;
     private String triggerStatus;
     private String triggerMsg;
@@ -61,7 +61,7 @@ public class JobTask {
      */
     private Integer runTimes;
     private String executeMsg;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date completeTime;
     private String jobName;
     private String jobCreateUser;
@@ -70,7 +70,7 @@ public class JobTask {
     /**
      * Version date
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date version;
 
     private boolean disposable = false;
