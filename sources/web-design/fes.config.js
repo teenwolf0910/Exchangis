@@ -78,7 +78,7 @@ export default {
     ],
     env: {
         local: {
-            api: '' // 本地联调地址
+            api: 'http://localhost:8000/api/v1/' // 本地联调地址
         },
         prod: {
             api: '/api/v1' // 生产环境

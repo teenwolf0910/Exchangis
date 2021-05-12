@@ -1,6 +1,8 @@
 @import '../addIconfont/iconfont.css';
 @import 'variables.scss';
 .layout-left-logo {
+    color: rgba(0,0,0,0.65) !important;
+    background: #F8F9FC !important;
     img {
         display: none;
     }
@@ -8,6 +10,44 @@
         font-weight: 700;
         font-size: 20px;
     }
+}
+.ui-modal-dialog {
+    overflow:visible!important;
+}
+.layout-left-body, .ui-menu{
+    background: #F8F9FC !important;
+}
+.ui-menu-item, .ui-menu-submenu, .ui-menu-submenu-title{
+    color: rgba(0,0,0,0.65) !important;
+    &:hover{
+        background: #EEF1FA !important;
+    }
+}
+.ui-menu-submenu-ul{
+    color: rgba(0,0,0,0.65) !important;
+    background: #F8F9FC !important;
+    .ui-menu-item{
+        background: #EEF1FA !important;
+        &:hover{
+            color: rgba(0,0,0,0.85) !important;
+        }
+    }
+}
+.ui-menu-submenu-actived{
+    background: #EEF1FA !important;
+}
+.ui-menu-submenu-choosed{
+    &.ui-menu-submenu-title{
+        background: #EEF1FA !important;
+    }
+}
+.ui-menu-item-actived{
+    color: #2E92F7 !important;
+    background: #EEF1FA !important;
+    border-right: 0px !important;
+}
+.ui-menu-arrow {
+    color: rgba(0,0,0,0.65) !important;
 }
 .ui-modal-dialog {
     overflow:visible!important;
@@ -51,11 +91,11 @@
     padding-top: 3px;
 }
 .layout-left {
-    width:  240px !important;
+    width:  200px !important;
 }
 .layout-right {
     position: absolute;
-    left: 240px !important;
+    left: 200px !important;
     right: 0;
     top: 0;
     bottom: 0;
@@ -65,7 +105,7 @@
     }
 }
 .layout.layout-left-hidden {
-    left: -240px !important;
+    left: -200px !important;
 }
 
 .full-height {
