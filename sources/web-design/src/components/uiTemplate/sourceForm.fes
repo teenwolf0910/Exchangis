@@ -79,7 +79,7 @@
         </Form-item>
         <div v-if="currentTemplateParameter.authType === 'KERBERS' || currentTemplateParameter.authType === 'KEYFILE'">
             <Form-item v-if="activeType === 'update' && sourceForm.authCreden !== '' &&
-                sourceForm.keytabFile === null" :label="currentTemplateParameter.authType === 'KERBERS' ? `keytab${$t('uiTemplate.WJ')}` : $t('uiTemplate.MYWJ')" prop="keytabFile">
+                sourceForm.keytabFile === null" :label="currentTemplateParameter.authType === 'KERBERS' ? $t('uiTemplate.WJ') : $t('uiTemplate.MYWJ')" prop="keytabFile">
                 <Row>
                     <Cell span="10">
                         <wb-input v-model="sourceForm.authCreden" type="text" disabled />
