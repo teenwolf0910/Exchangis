@@ -1,10 +1,6 @@
 <template>
     <main class="main full-height">
         <div class="header-bar">
-            <p class="header-title">
-                {{ $t('sys.Performusermanagement') }}
-            </p>
-            <p class="header-divider"> / </p>
             <p class="header-des">
                 {{ $t('sys.Performusermanagement') }}
             </p>

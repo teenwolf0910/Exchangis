@@ -1,10 +1,6 @@
 <template>
     <main class="main">
         <div class="header-bar">
-            <p class="header-title">
-                {{ $t('dataTemplate.SJYMBGL') }}
-            </p>
-            <p class="header-divider"> / </p>
             <p class="header-des">
                 {{ $t('dataTemplate.SJYLJCSMBGL') }}
             </p>

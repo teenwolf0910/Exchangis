@@ -102,15 +102,16 @@ export default {
                         return `{
                             border: none;
                             padding: 0 10px;
-                            background-color: #ff9988;
                             overflow: hidden;
                             text-overflow: ellipsis;
                             white-space: nowrap;
                             max-width: 90px;
                             border-radius: 5px;
-                            color: #f7f7f7;
+                            border: 1px solid  #DEE4EC;
                             line-height: 25px;
                             display: inline-block;
+                            background: #f3f3f3;
+                            color: rgba(0,0,0,0.65);
                         }`
                     }
                 },

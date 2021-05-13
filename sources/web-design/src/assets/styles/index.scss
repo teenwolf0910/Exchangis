@@ -3,6 +3,12 @@
 .layout-left-logo {
     color: rgba(0,0,0,0.65) !important;
     background: #F8F9FC !important;
+    height: 95px;
+    padding: 0px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #DEE4EC;
     img {
         display: none;
     }
@@ -45,6 +51,7 @@
     color: #2E92F7 !important;
     background: #EEF1FA !important;
     border-right: 0px !important;
+    font-weight: 600 !important;
 }
 .ui-menu-arrow {
     color: rgba(0,0,0,0.65) !important;
@@ -92,10 +99,13 @@
 }
 .layout-left {
     width:  200px !important;
+    border-right: 1px solid  #DEE4EC !important;
+    box-shadow: 2px 0px 6px  rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 5px 0px  rgba(0, 0, 0, 0.2) !important;
 }
 .layout-right {
     position: absolute;
-    left: 200px !important;
+    left: 202px !important;
     right: 0;
     top: 0;
     bottom: 0;
