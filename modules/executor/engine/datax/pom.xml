@@ -57,6 +57,8 @@
         <module>datax-mysqlwriter</module>
         <module>datax-oraclereader</module>
         <module>datax-oraclewriter</module>
+        <module>datax-gpdbwriter</module>
+        <module>datax-postgresqlreader</module>
         <module>datax-assembly</module>
     </modules>
     <dependencyManagement>

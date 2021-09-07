@@ -55,6 +55,14 @@
             <directory>../datax-oraclewriter/target/plugin</directory>
             <outputDirectory>/</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>../datax-postgresqlreader/target/plugin</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../datax-gpdbwriter/target/plugin</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
     </fileSets>
     <dependencySets>
         <dependencySet>

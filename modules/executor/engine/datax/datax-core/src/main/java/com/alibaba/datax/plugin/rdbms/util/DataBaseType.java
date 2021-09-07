@@ -14,6 +14,7 @@ public enum DataBaseType {
     Tddl("mysql", "com.mysql.jdbc.Driver"),
     DRDS("drds", "com.mysql.jdbc.Driver"),
     Oracle("oracle", "oracle.jdbc.OracleDriver"),
+    GreenPlum("greenplum", "org.postgresql.Driver"),
     SQLServer("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver"),
     PostgreSQL("postgresql", "org.postgresql.Driver"),
     RDBMS("rdbms", "DataBaseType"),
@@ -56,6 +57,8 @@ public enum DataBaseType {
                 break;
             case RDBMS:
                 break;
+            case GreenPlum:
+                break;
             default:
                 throw DataXException.asDataXException(DBUtilErrorCode.UNSUPPORTED_TYPE, "unsupported database type.");
         }
@@ -85,6 +88,8 @@ public enum DataBaseType {
                 break;
             case Oracle:
                 break;
+            case GreenPlum:
+                break;
             case SQLServer:
                 break;
             case DB2:
@@ -106,6 +111,11 @@ public enum DataBaseType {
         switch (this) {
             case MySql:
             case Oracle:
+                if (splitPk.length() >= 2 && splitPk.startsWith("`") && splitPk.endsWith("`")) {
+                    result = splitPk.substring(1, splitPk.length() - 1).toLowerCase();
+                }
+                break;
+            case GreenPlum:
                 if (splitPk.length() >= 2 && splitPk.startsWith("`") && splitPk.endsWith("`")) {
                     result = splitPk.substring(1, splitPk.length() - 1).toLowerCase();
                 }
@@ -135,6 +145,8 @@ public enum DataBaseType {
                 break;
             case Oracle:
                 break;
+            case GreenPlum:
+                break;
             case SQLServer:
                 result = "[" + columnName + "]";
                 break;
@@ -157,6 +169,8 @@ public enum DataBaseType {
                 break;
             case Oracle:
                 break;
+            case GreenPlum:
+                break;
             case SQLServer:
                 break;
             case DB2:
@@ -171,6 +185,7 @@ public enum DataBaseType {
     }
 
     private static Pattern mysqlPattern = Pattern.compile("jdbc:mysql://(.+):\\d+/.+");
+    private static Pattern greenplumPattern = Pattern.compile("jdbc:postgresql://(.+):\\d+/.+");
     private static Pattern oraclePattern = Pattern.compile("jdbc:oracle:thin:@(.+):\\d+:.+");
 
     /**
@@ -184,6 +199,10 @@ public enum DataBaseType {
         Matcher oracle = oraclePattern.matcher(jdbcUrl);
         if (oracle.matches()) {
             return oracle.group(1);
+        }
+        Matcher greenplum = greenplumPattern.matcher(jdbcUrl);
+        if (oracle.matches()) {
+            return greenplum.group(1);
         }
         return null;
     }

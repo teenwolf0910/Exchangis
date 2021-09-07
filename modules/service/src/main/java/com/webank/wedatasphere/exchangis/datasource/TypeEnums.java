@@ -43,7 +43,9 @@ public enum TypeEnums {
 
     MYSQL("mysql"),
 
-    ORACLE("oracle");
+    ORACLE("oracle"),
+
+    GREENPLUM("greenplum");
     private static Map<String, TypeEnums> typeMap = new HashMap<>();
     private String name;
     TypeEnums(String name){
@@ -64,5 +66,6 @@ public enum TypeEnums {
         typeMap.put(ELASTICSEARCH.name, ELASTICSEARCH);
         typeMap.put(MYSQL.name, MYSQL);
         typeMap.put(ORACLE.name, ORACLE);
+        typeMap.put(GREENPLUM.name, ORACLE);
     }
 }

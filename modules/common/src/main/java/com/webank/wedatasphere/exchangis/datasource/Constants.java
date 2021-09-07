@@ -79,4 +79,11 @@ public class Constants {
     public static final String PARAM_ORACLE_PORT = "port";
     public static final String PARAM_ORACLE_SERVICE_NAME  = "serviceName";
     public static final String PARAM_ORACLE_SID = "sid";
+
+    /**
+     *  GreenPlum data source parameters
+     */
+    public static final String PARAM_GREENPLUM_HOST = "host";
+    public static final String PARAM_GREENPLUM_PORT = "port";
+    public static final String PARAM_GREENPLUM_DB_NAME  = "dbName";
 }
