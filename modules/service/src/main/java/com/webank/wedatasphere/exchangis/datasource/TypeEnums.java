@@ -66,6 +66,6 @@ public enum TypeEnums {
         typeMap.put(ELASTICSEARCH.name, ELASTICSEARCH);
         typeMap.put(MYSQL.name, MYSQL);
         typeMap.put(ORACLE.name, ORACLE);
-        typeMap.put(GREENPLUM.name, ORACLE);
+        typeMap.put(GREENPLUM.name, GREENPLUM);
     }
 }
