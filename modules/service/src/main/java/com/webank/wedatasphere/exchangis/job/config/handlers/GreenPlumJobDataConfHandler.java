@@ -41,25 +41,8 @@ import java.util.stream.Collectors;
  */
 @Service(JobDataConfHandler.PREFIX + "greenplum")
 public class GreenPlumJobDataConfHandler extends AbstractJobDataConfHandler {
-
     private static final Logger LOG = LoggerFactory.getLogger(GreenPlumJobDataConfHandler.class);
-    private static final String DEFAULT_COLUMN_SEPARATOR = ",";
-    private static final String DEFAULT_TABLE_COLUMN_SEPARATOR = ".";
-    private static final String GREENPLUM_DB_NAME = "database";
-    private static final String GREENPLUM_TABLE_NAME = "table";
-    private static final String GREENPLUM_WHERE = "where";
-    private static final String GREENPLUM_WRITE_MODE = "writeMode";
-    private static final String GREENPLUM_BATCH_SIZE = "batchSize";
-    private static final String GREENPLUM_COLUMN_NAME = "sqlColumn";
-    private static final String GREENPLUM_COLUMN_NAME_ORDER = "sqlOrderColumn";
-    private static final String GREENPLUM_WHERE_CONDITION = " WHERE ";
-    private static final String GREENPLUM_SELECT_CONDITION = " SELECT ";
-    private static final String GREENPLUM_FROM_CONDITION = " FROM ";
-    private static final String GREENPLUM_AND_CONDITION = " AND ";
-    private static final String GREENPLUM_QUERY_SQL = "querySql";
-    private static final String GREENPLUM_PRIMARY_KEYS = "primaryKeys";
-    private static final int MAX_BATCH_SIZE = 100000;
-
+    private static final String TABLE_NAME_FILTER = "_";
     @Resource
     private GreenPlumMetaDbService greenplumMetaDbService;
 
@@ -136,8 +119,49 @@ public class GreenPlumJobDataConfHandler extends AbstractJobDataConfHandler {
         } else {
             tableName = String.valueOf(tableNameParam);
         }
+        String tmpTableName = tableName+TABLE_NAME_FILTER+System.currentTimeMillis();
+        List<String> primaryKeys = this.greenplumMetaDbService.getPrimaryKeys(dataSource, String.valueOf(dataFormParams.getOrDefault("database", "")), tableName);
+        String writeMode = String.valueOf(dataFormParams.getOrDefault("writeMode","insert"));
+        if(primaryKeys.size()==0 && !writeMode.equals("insert")){
+            throw new JobDataParamsInValidException("Greenplum Table:"+tableName+" Not Primary Key, And Only Support Insert Writer Mode");
+        }
 
-        dataFormParams.put("primaryKeys", this.greenplumMetaDbService.getPrimaryKeys(dataSource, String.valueOf(dataFormParams.getOrDefault("database", "")), tableName));
+        dataFormParams.put("primaryKeys", primaryKeys);
+
+        List<String> preSqls =  new ArrayList<>();
+        preSqls.add(String.format("drop table if exists %s;",tmpTableName));
+        preSqls.add(String.format("create table %s as select * from %s where 1=0;",tmpTableName,tableName));
+        dataFormParams.put("table",tmpTableName);
+        dataFormParams.put("preSql",preSqls);
+
+        List<String> postSqls =  new ArrayList<>();
+        StringBuilder primaryJoin = new StringBuilder();
+        for (int i = 0; i < primaryKeys.size(); i++) {
+            String column = primaryKeys.get(i);
+            if( i ==0 ) {
+                primaryJoin.append("n." + column + "=o." + column);
+            }else{
+                primaryJoin.append("and n." + column + "=o." + column);
+            }
+        }
+        switch (writeMode){
+                case "replace":
+                    postSqls.add(String.format("delete from %s where id in(select n.id from %s o join %s n on %s);",tableName,tableName,tmpTableName,primaryJoin));
+                    break;
+                case "update":
+                    postSqls.add(String.format("delete from %s where id not in(select n.id from %s o join %s n on %s);",tmpTableName,tableName,tmpTableName,primaryJoin));
+                    postSqls.add(String.format("delete from %s where id in(select n.id from %s o join %s n on %s);",tableName,tableName,tmpTableName,primaryJoin));
+                    break;
+                default:
+                    postSqls.add(String.format("delete from %s where id in(select n.id from %s o join %s n on %s);",tmpTableName,tableName,tmpTableName,primaryJoin));
+                    break;
+        }
+
+        postSqls.add(String.format("insert into %s select * from %s;",tableName,tmpTableName));
+        postSqls.add(String.format("drop table %s;",tmpTableName));
+        dataFormParams.put("postSql",postSqls);
+
+
         Map<String, Object> objectMap = dataSource.resolveParams();
         String host = String.valueOf(objectMap.get("host"));
         String port = objectMap.get("port").toString();
