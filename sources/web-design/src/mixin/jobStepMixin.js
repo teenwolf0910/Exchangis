@@ -437,6 +437,31 @@ export default {
                                         );
                                     }
                                 });
+                            } else if (this.addData.type === SOURCETYPE.GREENPLUM) {
+                                const {
+                                    dataSourceId,
+                                    DBData,
+                                    table,
+                                } = this.greenplumData;
+                                this.FesApi.fetch(
+                                    `/datasource/meta/greenplum/${dataSourceId}/${DBData}/${table}/check`,
+                                    {},
+                                    {
+                                        method: "get",
+                                        timeout: "60000",
+                                    }
+                                ).then((rst) => {
+                                    if (rst) {
+                                        this.$emit(
+                                            "nextStep",
+                                            this[
+                                                this.typeTransitionDataName(
+                                                    this.addData.type
+                                                )
+                                            ]
+                                        );
+                                    }
+                                })
                             } else {
                                 this.$emit(
                                     "nextStep",
@@ -496,6 +521,8 @@ export default {
                     return "localFsData";
                 case SOURCETYPE.ORACLE:
                     return "oracleData";
+                case SOURCETYPE.GREENPLUM:
+                    return "greenplumData"
                 default:
                     break;
             }

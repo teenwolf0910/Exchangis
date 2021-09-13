@@ -23,6 +23,7 @@
                         <wb-option value="ElasticSearch" label="ElasticSearch" />
                         <wb-option value="MYSQL" label="MYSQL" />
                         <wb-option value="ORACLE" label="ORACLE" />
+                        <wb-option value="GREENPLUM" label="GREENPLUM" />
                     </Wb-select>
                 </Cell>
                 <div class="data-source">
@@ -62,6 +63,7 @@
                         <i v-if="item.sourceType === 'mysql'" class="item-icon" size="35">MYSQL</i>
                         <i v-if="item.sourceType === 'elasticsearch'" class="item-icon" size="35">ES</i>
                         <i v-if="item.sourceType === 'oracle'" class="item-icon" size="35">ORACLE</i>
+                        <i v-if="item.sourceType === 'greenplum'" class="item-icon" size="35">GREENPLUM</i>
                     <div class="item-name item-col">
                         <span class="title">
                         {{ item.sourceName }}
@@ -130,6 +132,10 @@
                 &nbsp;&nbsp;
                 <Wb-button class="iconfont" @click="showAddWind('ORACLE',`ORACLE ${$t('manager.SJY')}`)">
                 ORACLE {{ $t('manager.SJY') }}
+                </Wb-button>
+                &nbsp;&nbsp;
+                <Wb-button class="iconfont" @click="showAddWind('GREENPLUM',`GREENPLUM ${$t('manager.SJY')}`)">
+                GREENPLUM {{ $t('manager.SJY') }}
                 </Wb-button>
             </Panel>
             <Panel :title="$t('manager.DSJCC')" class="form-inner-panel">

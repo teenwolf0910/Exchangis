@@ -1,46 +1,47 @@
 <template>
     <main class="main">
         <div class="header-bar">
-            <span class="header-title">
-                {{ $t('dataTemplate.SJYMBGL') }}
+            <span class="header-title"> 
+                {{ $t('dataTemplate.SJYMBGL') }} 
             </span>
             <p class="header-des">
-                {{ $t('dataTemplate.SJYLJCSMBGL') }}
+                {{ $t('dataTemplate.SJYLJCSMBGL') }} 
             </p>
         </div>
         <div class="main-content">
             <Row class="top-bar">
                 <div>
                     <label class="ui-form-label">
-                    {{ $t('dataTemplate.MBLX') }}
+                    {{ $t('dataTemplate.MBLX') }} 
                     </label>
                 </div>
                 <Cell span="4">
-                    <Wb-select v-model="querySourceType" :placeholder="$t('dataTemplate.QXZSJY')">
+                    <Wb-select v-model="querySourceType" :placeholder="$t('dataTemplate.QXZSJY')"> 
                         <wb-option value="HIVE" label="HIVE" />
                         <wb-option value="HDFS" label="HDFS" />
                         <wb-option value="SFTP" label="SFTP" />
                         <wb-option value="ElasticSearch" label="ElasticSearch" />
                         <wb-option value="MYSQL" label="MYSQL" />
                         <wb-option value="ORACLE" label="ORACLE" />
+                        <wb-option value="GREENPLUM" label="GREENPLUM" />
                     </Wb-select>
                 </Cell>
-                <div class="margin-left">
+                <div class="margin-left"> 
                     <label class="ui-form-label">
                     {{ $t('dataTemplate.MBMC') }}
                     </label>
                 </div>
                 <Cell span="4">
-                    <Wb-input v-model="queryModelName" :maxlength="200" :placeholder="$t('dataTemplate.CXMBMC')" />
+                    <Wb-input v-model="queryModelName" :maxlength="200" :placeholder="$t('dataTemplate.CXMBMC')" /> 
                 </Cell>
                 <Cell span="4" class="margin-left">
                     <Wb-button type="primary" icon="search" @click="searchQuery()">
-                    {{ $t('dataTemplate.CX') }}
+                    {{ $t('dataTemplate.CX') }} 
                     </Wb-button>
                 </Cell>
             </Row>
             <div class="template-lsit">
-                <div class="add-item template-item" @click="addAction">
+                <div class="add-item template-item" @click="addAction"> 
                     <Icon type="md-add" size="16" />
                     {{ $t('dataTemplate.XZMB') }}
                 </div>
@@ -53,6 +54,7 @@
                             <i v-if="item.sourceType === 'MYSQL'" class="icon-bar" type="iconfont icon-mysql" size="35">MYSQL</i>
                             <i v-if="item.sourceType === 'ElasticSearch'" class="icon-bar" type="iconfont icon-ElasticSearch" size="35">ES</i>
                             <i v-if="item.sourceType === 'ORACLE'" class="icon-bar" type="iconfont icon-xingzhuang" size="35">ORACLE</i>
+                            <i v-if="item.sourceType === 'GREENPLUM'" class="icon-bar" type="iconfont icon-GREENPLUM" size="35">GREENPLUM</i>
                             <!-- <span class="template-type" :title="item.sourceType">
                             {{ item.sourceType }}
                             </span> -->
@@ -214,6 +216,24 @@
                         </div>
                     </Form-item>
                 </Row>
+                <Row v-if="selectSourceType === 'GREENPLUM'">
+                    <Cell span="12">
+                        <Form-item label="GREENPLUM Path" prop="GREENPLUMPath" :label-width="130">
+                            <wb-input v-model="parameter.host" :placeholder="`GREENPLUM ${$t('dataTemplate.DZ')} HOST`" width="85%" :disabled="actionType === 'view'">
+                            </wb-input>
+                        </Form-item>
+                    </cell>
+                    <Cell span="12">
+                        <Form-item prop="pathPort" :label-width="80">
+                            <wb-input v-model="parameter.port" type="number" :placeholder="`GREENPLUM ${$t('dataTemplate.DZDKH')}`" width="65%" :disabled="actionType === 'view'" />
+                        </Form-item>
+                    </Cell>
+                    <Cell span="11">
+                        <Form-item prop="dbName" :label-width="130">
+                            <wb-input v-model="parameter.dbName" :placeholder="`GREENPLUM ${$t('dataTemplate.DZ')} dbName`" :disabled="actionType === 'view'" />
+                        </Form-item>
+                    </Cell>
+                </Row>
                 <Row v-if="selectSourceType === 'MYSQL'">
                     <Cell span="11">
                         <Form-item :label="`MYSQL ${$t('dataTemplate.DZ')}`" prop="sqlPathHost" :label-width="130">
@@ -293,7 +313,8 @@ export default {
                 'SFTP',
                 'ElasticSearch',
                 'MYSQL',
-                'ORACLE'
+                'ORACLE',
+                'GREENPLUM'
             ],
             parameter: {
                 metaStorePaths: [
@@ -372,6 +393,9 @@ export default {
                 elasticPath: [
                     {required: true, message: `elasticUrl ${this.$t('dataTemplate.BNWK')}`}
                 ],
+                GREENPLUMPath: [
+                    {required: true, message: `GREENPLUMPath ${this.$t('dataTemplate.BNWK')}`}
+                ],
                 sqlPathHost: [
                     {required: true, message: `sql ${this.$t('dataTemplate.DZ')} host ${this.$t('dataTemplate.BNWK')}`}
                 ],
@@ -402,7 +426,7 @@ export default {
                     {value: 'DEFAULT', label: this.$t('dataTemplate.MR')},
                     {value: 'KEYFILE', label: 'keyFile'}
                 ]
-            } else if (this.selectSourceType === 'ElasticSearch' || this.selectSourceType === 'MYSQL' || this.selectSourceType === 'ORACLE') {
+            } else if (this.selectSourceType === 'ElasticSearch' || this.selectSourceType === 'MYSQL' || this.selectSourceType === 'ORACLE' || this.selectSourceType === 'GREENPLUM') {
                 temArry = [
                     {value: 'DEFAULT', label: this.$t('dataTemplate.MR')}
                 ]
@@ -557,6 +581,12 @@ export default {
                 parameter.port = this.parameter.port;
                 parameter.authType = this.parameter.authType;
                 parameter.haveKerberos = false;
+            } else if (this.selectSourceType === 'GREENPLUM') {
+                parameter.dbName = this.parameter.dbName;
+                parameter.host = this.parameter.host;
+                parameter.port = this.parameter.port;
+                parameter.authType = this.parameter.authType;
+                parameter.haveKerberos = false;
             } else {
                 parameter.host = this.parameter.host;
                 parameter.port = this.parameter.port;
@@ -683,6 +713,10 @@ export default {
             } else if (this.selectSourceType === 'ORACLE') {
                 this.parameter.serviceName = parameter.serviceName;
                 this.parameter.sid = parameter.sid;
+                this.parameter.host = parameter.host;
+                this.parameter.port = parameter.port;
+            } else if (this.selectSourceType === "GREENPLUM") {
+                this.parameter.dbName = parameter.dbName;
                 this.parameter.host = parameter.host;
                 this.parameter.port = parameter.port;
             } else {
