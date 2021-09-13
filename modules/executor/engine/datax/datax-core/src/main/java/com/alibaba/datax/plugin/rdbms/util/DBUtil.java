@@ -539,8 +539,15 @@ public final class DBUtil {
         Statement statement = null;
         ResultSet rs = null;
         String queryColumnSql = null;
+
         try {
             statement = conn.createStatement();
+            LOG.info("DataBaseType:"+dataBaseType);
+            if(dataBaseType == DataBaseType.PostgreSQL) {
+                if (tableName.matches("(.+)_plum_change_tmp_(.{10,})")) {
+                    tableName = tableName.substring(0, tableName.lastIndexOf("_plum_change_tmp_"));
+                }
+            }
             queryColumnSql = String.format("select * from %s where 1=2",
                     tableName);
             rs = statement.executeQuery(queryColumnSql);
@@ -586,6 +593,9 @@ public final class DBUtil {
                 new ArrayList<String>());
         try {
             statement = conn.createStatement();
+            if (tableName.matches("(.+)_plum_change_tmp_(.{10,})")) {
+                tableName = tableName.substring(0, tableName.lastIndexOf("_plum_change_tmp_"));
+            }
             String queryColumnSql = "select " + column + " from " + tableName
                     + " where 1=2";
 

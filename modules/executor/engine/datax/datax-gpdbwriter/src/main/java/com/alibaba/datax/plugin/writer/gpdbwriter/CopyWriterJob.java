@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +98,29 @@ public class CopyWriterJob extends CommonRdbmsWriter.Job {
         DBUtil.closeDBResources(null, null, conn);
     }
 
+    @Override
+    public void destroy(Configuration originalConfig){
+        LOG.info("Writer Destroy");
+        String username = originalConfig.getString(Key.USERNAME);
+        String password = originalConfig.getString(Key.PASSWORD);
+
+        // 已经由 prepare 进行了appendJDBCSuffix处理
+        String jdbcUrl = originalConfig.getString(Key.JDBC_URL);
+
+        Connection conn = DBUtil.getConnection(DataBaseType.PostgreSQL, jdbcUrl, username, decode(password));
+        for (String table : tables) {
+            try {
+                if (table.matches("(.+)_plum_change_tmp_(.{10,})")) {
+                    LOG.info("Clear Tmp Table:"+table);
+                    DBUtil.executeSqlWithoutResultSet(conn.createStatement(), "drop table "+table);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        DBUtil.closeDBResources(null, null, conn);
+
+    }
     private String decode(String password){
         if(StringUtils.isNotBlank(password)){
             try {

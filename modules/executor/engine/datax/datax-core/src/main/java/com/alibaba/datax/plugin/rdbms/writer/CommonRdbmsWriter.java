@@ -120,7 +120,7 @@ public class CommonRdbmsWriter {
                     originalConfig.remove(Key.PRE_SQL);
 
                     Connection conn = DBUtil.getConnection(dataBaseType,
-                            jdbcUrl, username, password, proxyHost, proxyPort);
+                            jdbcUrl, username, decode(password), proxyHost, proxyPort);
                     LOG.info("Begin to execute preSqls:[{}]. context info:{}.",
                             StringUtils.join(renderedPreSqls, ";"), jdbcUrl);
 
@@ -161,7 +161,7 @@ public class CommonRdbmsWriter {
                     originalConfig.remove(Key.POST_SQL);
 
                     Connection conn = DBUtil.getConnection(this.dataBaseType,
-                            jdbcUrl, username, password, proxyHost, proxyPort);
+                            jdbcUrl, username, decode(password), proxyHost, proxyPort);
 
                     LOG.info(
                             "Begin to execute postSqls:[{}]. context info:{}.",
@@ -173,6 +173,18 @@ public class CommonRdbmsWriter {
         }
 
         public void destroy(Configuration originalConfig) {
+
+        }
+        private String decode(String password){
+            if(StringUtils.isNotBlank(password)){
+                try {
+                    return  (String) CryptoUtils.string2Object(password);
+                } catch (Exception e) {
+                    throw DataXException.asDataXException(DBUtilErrorCode.CONF_ERROR, "decrypt password failed");
+                }
+            }else {
+                throw DataXException.asDataXException(DBUtilErrorCode.CONF_ERROR, "password is blank");
+            }
         }
 
     }

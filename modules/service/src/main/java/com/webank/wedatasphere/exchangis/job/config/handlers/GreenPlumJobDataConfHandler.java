@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Service(JobDataConfHandler.PREFIX + "greenplum")
 public class GreenPlumJobDataConfHandler extends AbstractJobDataConfHandler {
     private static final Logger LOG = LoggerFactory.getLogger(GreenPlumJobDataConfHandler.class);
-    private static final String TABLE_NAME_FILTER = "_";
+    private static final String TABLE_GREENPLUM_NAME_FILTER = "_plum_change_tmp_";
     @Resource
     private GreenPlumMetaDbService greenplumMetaDbService;
 
@@ -119,7 +119,7 @@ public class GreenPlumJobDataConfHandler extends AbstractJobDataConfHandler {
         } else {
             tableName = String.valueOf(tableNameParam);
         }
-        String tmpTableName = tableName+TABLE_NAME_FILTER+System.currentTimeMillis();
+        String tmpTableName = tableName+TABLE_GREENPLUM_NAME_FILTER+System.currentTimeMillis();
         List<String> primaryKeys = this.greenplumMetaDbService.getPrimaryKeys(dataSource, String.valueOf(dataFormParams.getOrDefault("database", "")), tableName);
         String writeMode = String.valueOf(dataFormParams.getOrDefault("writeMode","insert"));
         if(primaryKeys.size()==0 && !writeMode.equals("insert")){
@@ -128,13 +128,17 @@ public class GreenPlumJobDataConfHandler extends AbstractJobDataConfHandler {
 
         dataFormParams.put("primaryKeys", primaryKeys);
 
-        List<String> preSqls =  new ArrayList<>();
+        List preSqls =  new ArrayList<>();
         preSqls.add(String.format("drop table if exists %s;",tmpTableName));
-        preSqls.add(String.format("create table %s as select * from %s where 1=0;",tmpTableName,tableName));
+        //create table test6 (like test2);
+        preSqls.add(String.format("create table %s (like %s);",tmpTableName,tableName));
+        if(primaryKeys.size()>0) {
+            preSqls.add(String.format("alter table %s add constraint %s primary key (%s);", tmpTableName, tmpTableName + "_primary_key", StringUtils.join(primaryKeys, ",")));
+        }
         dataFormParams.put("table",tmpTableName);
         dataFormParams.put("preSql",preSqls);
 
-        List<String> postSqls =  new ArrayList<>();
+        List postSqls =  new ArrayList<>();
         StringBuilder primaryJoin = new StringBuilder();
         for (int i = 0; i < primaryKeys.size(); i++) {
             String column = primaryKeys.get(i);
@@ -153,7 +157,9 @@ public class GreenPlumJobDataConfHandler extends AbstractJobDataConfHandler {
                     postSqls.add(String.format("delete from %s where id in(select n.id from %s o join %s n on %s);",tableName,tableName,tmpTableName,primaryJoin));
                     break;
                 default:
-                    postSqls.add(String.format("delete from %s where id in(select n.id from %s o join %s n on %s);",tmpTableName,tableName,tmpTableName,primaryJoin));
+                    if(primaryKeys.size()>0){
+                        postSqls.add(String.format("delete from %s where id in(select n.id from %s o join %s n on %s);", tmpTableName, tableName, tmpTableName, primaryJoin));
+                    }
                     break;
         }
 
