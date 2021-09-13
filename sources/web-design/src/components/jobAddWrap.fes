@@ -87,28 +87,28 @@ export default {
                 current: 1,
                 total: 0
             },
-            dataSrcParams: {},
+            dataSrcParams: {},  // 目的源参数
             currentStep: 1,
-            firstDataSourceType: '',
+            firstDataSourceType: '', 
             secondDataSourceType: '',
             saveDisable: false,
             syncMetaData: {} // 同步源信息数据
         }
     },
     FesReady() {
-        this.initCurrentStep();
+        this.initCurrentStep(); // 当Vue实例被挂载之后立即调用
     },
     computed: {
         // 动态步骤条
         stepDescription() {
             if (this.toFourOrThree() && !(this.syncMetaData.show && this.syncMetaData.syncMeta)) {
                 return [
-                    this.$t('message.newComponents.Chooseexecutionengine'),
-                    this.$t('components.XZSJY'),
-                    this.$t('components.XZMD'),
-                    this.$t('components.ZDYS'),
-                    this.$t('components.SDKZ'),
-                    this.$t('components.JBXX')
+                    this.$t('message.newComponents.Chooseexecutionengine'), // 选择执行引擎
+                    this.$t('components.XZSJY'), // 选择来源
+                    this.$t('components.XZMD'),  // 选择目的
+                    this.$t('components.ZDYS'),  // 字段映射
+                    this.$t('components.SDKZ'),  // 速度控制
+                    this.$t('components.JBXX')   // 基本信息
                 ]
             } else {
                 // es数据源选择后置处理器
@@ -197,6 +197,13 @@ export default {
                 }).then((res) => {
                     this.partThreeData = res;
                 })
+            } else if (addDataOne.type === SOURCETYPE.GREENPLUM) {
+                this.FesApi.fetch('/datasource/meta/greenplum/' + addDataOne.dataSourceId + '/' + addDataOne.DBData + '/' + addDataOne.table + '/fields', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then((res) => {
+                    this.partThreeData = res;
+                })
             }
         },
         partTwoPre() {
@@ -220,7 +227,7 @@ export default {
             this.partTwo = false;
 
             if (this.syncMetaData.show && this.syncMetaData.syncMeta) return;
-            if (addDataTwo.type === SOURCETYPE.HIVE && (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HIVE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+            if (addDataTwo.type === SOURCETYPE.HIVE && (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HIVE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.GREENPLUM) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
                 this.FesApi.fetch('/datasource/meta/hive/' + addDataTwo.dataSourceId + '/' + addDataTwo.db + '/' + addDataTwo.table + '/fields', {}, {
                     method: 'get',
                     timeout: '60000'
@@ -231,7 +238,6 @@ export default {
                         obj.sourceWord = this.partThreeData[i % this.partThreeData.length].name;
                         obj.sourceType = this.partThreeData[i % this.partThreeData.length].type;
                         sourceArr.push(obj);
-
                     }
                     let newObject = {};
                     newObject.sourceArr = sourceArr;
@@ -249,7 +255,7 @@ export default {
                     this.newObject = newObject;
                     this.editorAction(this.editData, rst)
                 });
-            } else if (addDataTwo.type === SOURCETYPE.MYSQL && (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HIVE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+            } else if (addDataTwo.type === SOURCETYPE.MYSQL && (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HIVE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.TDSQL || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.GREENPLUM) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
                 this.FesApi.fetch('/datasource/meta/mysql/' + addDataTwo.dataSourceId + '/' + addDataTwo.DBData + '/' + addDataTwo.table + '/fields', {}, {
                     method: 'get',
                     timeout: '60000'
@@ -260,7 +266,6 @@ export default {
                         obj.sourceWord = this.partThreeData[i % this.partThreeData.length].name;
                         obj.sourceType = this.partThreeData[i % this.partThreeData.length].type;
                         sourceArr.push(obj);
-
                     }
                     let newObject = {};
                     newObject.sourceArr = sourceArr;
@@ -278,7 +283,7 @@ export default {
                     this.newObject = newObject;
                     this.editorAction(this.editData, rst)
                 });
-            } else if ([SOURCETYPE.HIVE, SOURCETYPE.MYSQL, SOURCETYPE.ORACLE].includes(this.FesFesx.FirstCurrentDataSourceType) && [ SOURCETYPE.LOCAL_FS, SOURCETYPE.HDFS, SOURCETYPE.SFTP].includes(addDataTwo.type) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+            } else if ([SOURCETYPE.HIVE, SOURCETYPE.MYSQL, SOURCETYPE.ORACLE, SOURCETYPE.GREENPLUM].includes(this.FesFesx.FirstCurrentDataSourceType) && [ SOURCETYPE.LOCAL_FS, SOURCETYPE.HDFS, SOURCETYPE.SFTP].includes(addDataTwo.type) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
                 let newObject = {
                     funcArr: [],
                     rst: [],
@@ -321,7 +326,36 @@ export default {
                     this.newObject = newObject;
                     this.editorAction(this.editData, rst)
                 });
-            }
+            } else if (addDataTwo.type === SOURCETYPE.GREENPLUM && (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.HIVE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.GREENPLUM) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD) {
+                this.FesApi.fetch('/datasource/meta/greenplum/' + addDataTwo.dataSourceId + '/' + addDataTwo.DBData + '/' + addDataTwo.table + '/fields', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst=>{
+                    let sourceArr = [];
+                    for (let i = 0; i < rst.length; i++) {
+                        let obj = {};
+                        obj.sourceWord = this.partThreeData[i % this.partThreeData.length].name;
+                        obj.sourceType = this.partThreeData[i % this.partThreeData.length].type;
+                        sourceArr.push(obj);
+
+                    }
+                    let newObject = {};
+                    newObject.sourceArr = sourceArr;
+                    let funcArr = [];
+                    for (let i = 0; i < rst.length; i++) {
+                        let obj = {};
+                        obj.validFun = '';
+                        obj.transform = '';
+                        obj.validFuncArg = [];
+                        obj.transformFunArg = [];
+                        funcArr.push(obj);
+                    }
+                    newObject.funcArr = funcArr;
+                    newObject.rst = rst;
+                    this.newObject = newObject;
+                    this.editorAction(this.editData, rst)
+                });
+            } 
             if (addDataTwo.type === SOURCETYPE.ELASTICSEARCH) {
                 if (addDataTwo.usePostProcess) {
                     if (this.editData && this.editData.config.procSrcCode) {
@@ -566,12 +600,12 @@ export default {
                 config.dataDstParams.partitions = this.addData.addData2.partitions;
                 config.dataDstParams.writeMode = this.syncMetaData.writeMode;
                 obj.dataDestId = this.addData.addData2.dataSourceId;
-            } else if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.ORACLE) {
+            } else if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.ORACLE || this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.GREENPLUM) {
                 config.dataDstParams.database = this.addData.addData2.DBData;
                 config.dataDstParams.table = this.addData.addData2.table;
                 config.dataDstParams.batchSize = this.addData.addData2.batchSize;
                 obj.dataDestId = this.addData.addData2.dataSourceId ? this.addData.addData2.dataSourceId : 0;
-                if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.MYSQL) {
+                if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.GREENPLUM) {
                     config.dataDstParams.writeMode = this.addData.addData2.writeMode;
                 }
             } else if (this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.ELASTICSEARCH) {
@@ -617,7 +651,7 @@ export default {
                 config.dataSrcParams.alias = this.addData.addData1.alias;
                 config.dataSrcParams.where = this.addData.addData1.where;
                 obj.dataSrcId = this.addData.addData1.dataSourceId ? this.addData.addData1.dataSourceId : 0;
-            } else if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE) {
+            } else if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.GREENPLUM) {
                 config.dataSrcParams.database = this.addData.addData1.DBData;
                 config.dataSrcParams.table = this.addData.addData1.table;
                 config.dataSrcParams.where = this.addData.addData1.where;
@@ -707,7 +741,7 @@ export default {
         },
         initCurrentStep() {
             this.currentStep = 1;
-            this.FesFesx.set('FirstCurrentDataSourceType', SOURCETYPE.HIVE);
+            this.FesFesx.set('FirstCurrentDataSourceType', SOURCETYPE.HIVE); // FesFesx全局map对象，所有组件中均可使用
             this.FesFesx.set('secondCurrentDataSourceType', SOURCETYPE.HIVE);
         },
         arrayToObjList(arr) {
@@ -719,7 +753,7 @@ export default {
         },
         // 是否有字段映射步骤
         toFourOrThree() {
-            return [SOURCETYPE.HIVE, SOURCETYPE.MYSQL, SOURCETYPE.ORACLE].includes(this.FesFesx.FirstCurrentDataSourceType) && ([SOURCETYPE.HIVE, SOURCETYPE.MYSQL, SOURCETYPE.LOCAL_FS, SOURCETYPE.HDFS, SOURCETYPE.SFTP, SOURCETYPE.ORACLE].includes(this.FesFesx.secondCurrentDataSourceType) || this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.ELASTICSEARCH && !this.FesFesx.usePostProcess) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD
+            return [SOURCETYPE.HIVE, SOURCETYPE.MYSQL, SOURCETYPE.ORACLE, SOURCETYPE.GREENPLUM].includes(this.FesFesx.FirstCurrentDataSourceType) && ([SOURCETYPE.HIVE, SOURCETYPE.MYSQL, SOURCETYPE.LOCAL_FS, SOURCETYPE.HDFS, SOURCETYPE.SFTP, SOURCETYPE.ORACLE, SOURCETYPE.GREENPLUM].includes(this.FesFesx.secondCurrentDataSourceType) || this.FesFesx.secondCurrentDataSourceType === SOURCETYPE.ELASTICSEARCH && !this.FesFesx.usePostProcess) && this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD
         },
         syncMeta(params) {
             this.syncMetaData = params;

@@ -5,7 +5,8 @@ const SOURCETYPE = {
     SFTP: 'sftp',
     ELASTICSEARCH: 'elasticsearch',
     MYSQL: 'mysql',
-    ORACLE: 'oracle'
+    ORACLE: 'oracle',
+    GREENPLUM: 'greenplum'
 }
 const TRANSFERTYPE = {
     STREAM: 'stream',
