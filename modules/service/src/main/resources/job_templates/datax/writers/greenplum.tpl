@@ -10,6 +10,8 @@
      "column_i": ${column},
      "column": ${sqlColumn|["*"]},
      "primaryKeys": ${primaryKeys},
+     "preSql": ${preSql},
+     "postSql": ${postSql},
      "connection": [{
        "table": [#{table}],
        "jdbcUrl": #{jdbcUrl}
