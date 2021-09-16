@@ -82,6 +82,21 @@
                     @dbSeleted="oracleDbSeleted"
                      />
             </template>
+            <template v-if="addData.type === 'greenplum'">
+                <greenplum
+                    :step-one-data="greenplumData"
+                    :source-origin="sourceOrigin"
+                    :ds-loading="ds_loading"
+                    :db-data-list="greenplumValue.dbs"
+                    :table-list="greenplumValue.tables"
+                    :ds_loading="ds_loading"
+                    :db_loading="db_loading"
+                    :table_loading="table_loading"
+                    @stepOneData="tdsqlDataAction"
+                    @sourceChange="greenplumSourceChange"
+                    @dbSeleted="greenplumDbSeleted"
+                     />
+            </template>
             <Row v-if="writeModeShow">
                 <Cell span="24">
                     <Form-item :label="$t('uiTemplate.BJXR')" prop="writeMode" :label-width="120">
@@ -95,7 +110,7 @@
             </Row>
             <Row v-if="syncMetaShow">
                 <Cell span="24">
-                    <Form-item :label="$t('components.TBYXX')" porp="syncMeta" :label-width="100">
+                    <Form-item :label="$t('components.TBYXX')" prop="syncMeta" :label-width="100">
                         <Radio v-model="syncMeta" />
                     </Form-item>
                 </Cell>
@@ -126,6 +141,7 @@ import jobStepMixin from '../mixin/jobStepMixin.js'
 import elaticSearch from './uiTemplate/elasticSearchSecond.fes';
 import mysql from './uiTemplate/tdsqlSecond.fes';
 import oracle from './uiTemplate/oracleSecond.fes';
+import greenplum from './uiTemplate/greenplumSecond.fes';
 import { SOURCETYPE, TRANSFERTYPE } from '../constants/common.js';
 export default {
     components: {
@@ -135,7 +151,8 @@ export default {
         sftpSecond,
         elaticSearch,
         mysql,
-        oracle
+        oracle,
+        greenplum
     },
     props: {
         editData: {
@@ -199,6 +216,14 @@ export default {
                 table: '',
                 batchSize: ''
             },
+            greenplumData: {
+                type: '',
+                dataSourceId: '',
+                DBData: '',
+                table: '',
+                writeMode: '',
+                batchSize: ''
+            },
             isAdd: false,
             tdsqlValue: {
                 dbs: [],
@@ -208,6 +233,10 @@ export default {
                 dbs: [],
                 tables: []
             },
+            greenplumValue: {
+                dbs: [],
+                tables: []
+            },           
             indexNameList: [],
             indexTypeList: [],
             syncMeta: false,
@@ -269,6 +298,20 @@ export default {
                 }
             }
         },
+        'greenplumValue.dbs'(val) {
+            if (val.length > 0 && this.editData !== '' ) {
+                if (val.includes(this.editData.config.dataDstParams.database)) {
+                    this.greenplumData.DBData = this.editData.config.dataDstParams.database;
+                }
+            }
+        },
+        'greenplumValue.tables'(val) {
+            if (val.length > 0 && this.editData !== '' ) {
+                if (val.includes(this.editData.config.dataDstParams.table)) {
+                    this.greenplumData.table = this.editData.config.dataDstParams.table;
+                }
+            }
+        },
         indexNameList(val) {
             if (val.length > 0 && this.editData !== '' && this.editData.config.dataDstParams.indexName !== '') {
                 this.elasticSearchData.indexName = this.editData.config.dataDstParams.indexName;
@@ -313,7 +356,7 @@ export default {
                     ]
                 }
             } else {
-                if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE) {
+                if (this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.MYSQL || this.FesFesx.firstIsSelectRecord === TRANSFERTYPE.RECORD || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.ORACLE || this.FesFesx.FirstCurrentDataSourceType === SOURCETYPE.GREENPLUM) {
                     if (!this.editData) {
                         this.addData.type = SOURCETYPE.HIVE
                     }
@@ -324,7 +367,8 @@ export default {
                         SOURCETYPE.SFTP,
                         SOURCETYPE.ELASTICSEARCH,
                         SOURCETYPE.MYSQL,
-                        SOURCETYPE.ORACLE
+                        SOURCETYPE.ORACLE,
+                        SOURCETYPE.GREENPLUM
                     ]
                 } else {
                     if (!this.editData) {
@@ -381,6 +425,9 @@ export default {
                 this.FesFesx.set('firstIsSelectRecord', TRANSFERTYPE.RECORD);
                 this.oracleData.type = value;
                 this.getSourceDataList(value);
+            } else if (value === SOURCETYPE.GREENPLUM) {
+                this.greenplumData.type = value;
+                this.getSourceDataList(value);
             } else {
                 this.hdfsData.type = value;
                 this.getSourceDataList(value);
@@ -424,6 +471,10 @@ export default {
                     }
                 } else if (val.config.dataDstParams.type === SOURCETYPE.ORACLE) {
                     this.oracleData = {
+                        ...val.config.dataDstParams
+                    }
+                } else if (val.config.dataDstParams.type === SOURCETYPE.GREENPLUM) {
+                    this.greenplumData = {
                         ...val.config.dataDstParams
                     }
                 }
@@ -491,6 +542,24 @@ export default {
                 }).catch(() => this.db_loading = false);
             }
         },
+        greenplumSourceChange(value) {
+            this.greenplumData.DBData = '';
+            this.greenplumData.table = '';
+            this.greenplumValue.dbs = [];
+            this.greenplumValue.tables = [];
+            if (value == '') {
+                return false;
+            } else {
+                this.db_loading = true;
+                this.FesApi.fetch('/datasource/meta/greenplum/' + value + '/dbs', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst => {
+                    this.db_loading = false;
+                    this.greenplumValue.dbs = JSON.stringify(rst) === '{}' ? [] : rst;
+                }).catch(() => this.db_loading = false);
+            }
+        },
         oracleDbSeleted(value) {
             this.oracleData.table = '';
             this.oracleValue.tables = [];
@@ -502,6 +571,20 @@ export default {
                 }).then(rst => {
                     this.table_loading = false;
                     this.oracleValue.tables = JSON.stringify(rst) === '{}' ? [] : rst;
+                }).catch(() => this.table_loading = false);
+            }
+        },
+        greenplumDbSeleted(value) {
+            this.greenplumData.table = '';
+            this.greenplumValue.tables = [];
+            if (value != '') {
+                this.table_loading = true;
+                this.FesApi.fetch('/datasource/meta/greenplum/' + this.greenplumData.dataSourceId + '/' + value + '/tables', {}, {
+                    method: 'get',
+                    timeout: '60000'
+                }).then(rst => {
+                    this.table_loading = false;
+                    this.greenplumValue.tables = JSON.stringify(rst) === '{}' ? [] : rst;
                 }).catch(() => this.table_loading = false);
             }
         },
