@@ -415,6 +415,15 @@ public class JobInfoController extends AbstractGenericController<JobInfo, JobInf
     public Response<JobInfo> show(@PathVariable Long id, HttpServletRequest request) throws Exception {
         //Config recover
         JobInfo jobInfo = jobInfoConfService.get(Math.toIntExact(id));
+        if(jobInfo.getConfig().getDataDstParams()!=null &&
+                "greenplum".equals(jobInfo.getConfig().getDataDstParams().get("type"))){
+            logger.warn("Deal With Greenplum Set TMP Table To Real Table ");
+            String tableName = jobInfo.getConfig().getDataDstParams().get("table").toString();
+            if (tableName.matches("(.+)_plum_change_tmp_(.{10,})")) {
+                tableName = tableName.substring(0, tableName.lastIndexOf("_plum_change_tmp_"));
+            }
+            jobInfo.getConfig().getDataDstParams().put("table",tableName);
+        }
         if(!hasDataAuth(JobInfo.class, DataAuthScope.READ, request, jobInfo)){
             return new Response<JobInfo>().errorResponse(CodeConstant.AUTH_ERROR, null, super.informationSwitch("exchange.job_info.error.access.rights"));
         }

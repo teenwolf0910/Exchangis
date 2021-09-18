@@ -93,7 +93,7 @@ public class GreenPlumJobDataConfHandler extends AbstractJobDataConfHandler {
         String host = String.valueOf(objectMap.get("host"));
         String port = objectMap.get("port").toString();
         String dbname = String.valueOf(objectMap.get("dbName"));
-        String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbname);
+        String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", host, port, dataFormParams.getOrDefault("database",dbname));
         dataFormParams.put("jdbcUrl", jdbcUrl);
     }
 
@@ -172,7 +172,7 @@ public class GreenPlumJobDataConfHandler extends AbstractJobDataConfHandler {
         String host = String.valueOf(objectMap.get("host"));
         String port = objectMap.get("port").toString();
         String dbname = String.valueOf(objectMap.get("dbName"));
-        String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbname);
+        String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", host, port, dataFormParams.getOrDefault("database",dbname));
         dataFormParams.put("jdbcUrl", jdbcUrl);
     }
 

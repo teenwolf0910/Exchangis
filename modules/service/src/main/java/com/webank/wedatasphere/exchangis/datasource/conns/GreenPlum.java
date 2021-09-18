@@ -62,7 +62,7 @@ public class GreenPlum {
     }
 
     private Connection getDbConnect(String database) throws Exception {
-        return getDbConnect();
+        return getDbConnectByDB(database);
     }
 
     private Connection getDbConnect() throws Exception {
@@ -70,6 +70,18 @@ public class GreenPlum {
         try {
             Class.forName(this.DRIVER);
             String url = String.format("jdbc:postgresql://%s:%s/%s", this.host, this.port, this.dbname);
+            conn = DriverManager.getConnection(url, this.username, this.password);
+            return conn;
+        } catch (Exception var3) {
+            throw new EndPointException("exchange.greenplum.obtain.database_info.failed", var3, new Object[0]);
+        }
+    }
+
+    private Connection getDbConnectByDB(String database) throws Exception {
+        Connection conn = null;
+        try {
+            Class.forName(this.DRIVER);
+            String url = String.format("jdbc:postgresql://%s:%s/%s", this.host, this.port, database);
             conn = DriverManager.getConnection(url, this.username, this.password);
             return conn;
         } catch (Exception var3) {
