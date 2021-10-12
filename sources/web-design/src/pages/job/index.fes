@@ -1,6 +1,7 @@
 <template>
     <div :style="`height: 100%;`">
         <Row :style="`height: 100%;`">
+            <!-- 左边栏 -->
             <Cell span="4" :style="`height: 100%;`">
                 <div class="left-list-wrap" :style="`height: 100%;`">
                     <h3 class="list-title">
@@ -16,6 +17,7 @@
                     <job-left-tree ref="job_left_tree" :add-tree-data="newData" @getTreeId="getTreeId" />
                 </div>
             </Cell>
+            <!-- 右边栏 -->
             <Cell class="project-right" :style="`height: 100%;`" span="20">
                 <Wb-form class="search-bar" :label-width="100">
                     <Row>
@@ -52,21 +54,22 @@
                         <Column :component="optionComponent" :name="$t('job.action')" width="350px" />
                     </Wb-table>
                     <div class="page-pagination-fix">
-                        <Pagination :loking="pagination.locking" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
+                        <Pagination :loking="pagination.locking" :size-list="sizeList" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
                     </div>
                 </fes-list-panel>
             </Cell>
         </Row>
+        <!-- 新增任务对话框 -->
         <weModal v-model="addModalShow" :title="$t('job.addProject')" width="1000" :footer-disable="false" :closable="false">
             <job-add-wrap ref="job_add_wrap" :tree-id="treeId" :edit-data="editData" :is-save="isSave" @saveInfo="saveinfo" @saveSucess="saveSucess" />
         </weModal>
-         <modal ref="addProjectModal" :title="$t('job.XZXM')">
+        <!-- 新增项目对话框 -->
+        <modal ref="addProjectModal" :title="$t('job.XZXM')">
             <Wb-form ref="addForm" :label-width="100">
                 <Form-item
                     :label="$t('job.MXMC')" prop="newData.projectName">
                     <wb-input v-model="newData.projectName" :placeholder="$t('job.SRXMMC')" />
                 </Form-item>
-
                 <Form-item :label="$t('job.MS')">
                     <wb-input v-model="newData.projectDesc" :placeholder="$t('job.MS')" />
                 </Form-item>
@@ -79,7 +82,9 @@
                 </div>
             </Wb-form>
         </modal>
+        <!-- 加载图案 -->
         <weLoading v-show="FesFesx.isLoading" />
+        <!-- 历史数据重跑对话框 -->
         <weModal v-model="resetTaskShow" :title="$t('job.LS')" width="800" height="400" @onConfirm="resetTaskAction">
             <Wb-form ref="resetTaskForm" :rule="validateForm">
                 <Row class="date-content">
@@ -110,7 +115,7 @@
                 <Row class="date-content">
                     <Cell span="12" offset="5">
                         <Form-item :label="$t('job.JGCD')" prop="timeInterval" :label-width="120">
-                            <Wb-input v-model="intervalValue" :placeholder="$t('job.SRSJCD')" disabled type="number" />
+                            <Wb-input v-model="intervalValue" :placeholder="$t('job.SRSJCD')" disabled type="number" /> <!-- 请输入时间长度 -->
                         </Form-item>
                     </Cell>
                 </Row>
@@ -156,6 +161,7 @@ export default {
                 current: 1,
                 total: 0
             },
+            sizeList: [10, 20, 30],
             resetTaskShow: false,
             addModalShow: false,
             dateValueStart: '',
@@ -292,8 +298,8 @@ export default {
             unitList: [
                 'DAY'
             ],
-            unitValue: 'DAY',
-            intervalValue: 1
+            unitValue: 'DAY', // 间隔单位
+            intervalValue: 1  // 间隔长度
         }
     },
     components: {
@@ -331,7 +337,7 @@ export default {
                 if (valid) {
                     // $t('message.newAllPage.Determinethestartandendarelegal')
                     if (this.checkTimeResult) {
-                        this.$Toast.error(this.$t('job.QXZHFSJD'));
+                        this.$Toast.error(this.$t('job.QXZHFSJD')); // 请选择合法时间段
                         this.resetTaskShow = true;
                         return;
                     } else {
@@ -434,17 +440,17 @@ export default {
         checkTimeInterval(val) {
             if (this.unitValue === 'DAY') {
                 if (val > 30) {
-                    this.$Toast.warn(this.$t('job.JGCDDY30'));
+                    this.$Toast.warn(this.$t('job.JGCDDY30')); // 间隔长度不得大于30天
                     return true;
                 }
             } else if (this.unitValue === 'HOUR') {
                 if (val > 24) {
-                    this.$Toast.warn(this.$t('job.JGCDDY24'));
+                    this.$Toast.warn(this.$t('job.JGCDDY24')); // 间隔长度不得大于24小时
                     return true;
                 }
             } else if (this.unitValue === 'MINUTE') {
                 if (val > 60) {
-                    this.$Toast.warn(this.$t('job.JGCDDY60'));
+                    this.$Toast.warn(this.$t('job.JGCDDY60')); // 间隔长度不得大于60分钟
                     return true;
                 }
             } else {

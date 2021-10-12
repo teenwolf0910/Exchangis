@@ -68,6 +68,11 @@ export default {
                 ],
                 fieldDelimiter: [
                     {
+                        required: true,
+                        message: this.$t("mixin.fieldBNK"),
+                        trigger: "blur"
+                    },
+                    {
                         validator: validateFieldDelimiter,
                         trigger: "change",
                     },

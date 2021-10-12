@@ -2,8 +2,8 @@
   <div class="udes-login">
     <div class="login-content">
       <h2 class="sys-title">
-{{ $t('message.newAllPage.Welcometologin') }}
-</h2>
+        {{ $t('message.newAllPage.Welcometologin') }}
+      </h2>
       <Wb-form ref="loginForm" :label-width="0" :rule="loginRule">
         <Form-item prop="userName">
           <wb-input v-model="userName" :placeholder="$t('message.newAllPage.Pleaseenteryourusername')" :maxlength="150" @on-enter="loginAction" />
@@ -13,8 +13,8 @@
         </Form-item>
         <Form-item>
           <Wb-button type="primary" long @click="loginAction">
-{{ $t('message.newAllPage.Thelogin') }}
-</Wb-button>
+            {{ $t('message.newAllPage.Thelogin') }}
+          </Wb-button>
         </Form-item>
       </Wb-form>
     </div>

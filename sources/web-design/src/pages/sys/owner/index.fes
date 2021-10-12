@@ -28,7 +28,7 @@
                 <Column :name="$t('sys.owner.CZ')" :action="ownerAction" />
             </Wb-table>
             <div class="page-pagination">
-                <Pagination :loking="pagination.locking" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
+                <Pagination :loking="pagination.locking" :size-list="sizeList" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
             </div>
         </fes-list-panel>
         <modal ref="addModal" :title="$t('sys.owner.XZSJYSZ')" @on-close="closeAdd">
@@ -89,12 +89,14 @@ export default {
             },
             ruleAdd: {
                 ownerName: [
-                    {required: true, message: this.$t('sys.owner.SZMCBNK')}
+                    {required: true, message: this.$t('sys.owner.SZMCBNK')},
+                    {max: 20, message: this.$t('sys.owner.SZMCLENMSG', {len: 20})}
                 ]
             },
             ruleModify: {
                 ownerName: [
-                    {required: true, message: this.$t('sys.owner.SZMCBNK')}
+                    {required: true, message: this.$t('sys.owner.SZMCBNK')},
+                    {max: 20, message: this.$t('sys.owner.SZMCLENMSG', {len: 20})}
                 ]
             },
             data: [],
@@ -103,6 +105,7 @@ export default {
                 current: 1,
                 total: 0
             },
+            sizeList: [10, 20, 30],
             ownerAction: [{
                 text: this.$t('sys.owner.BJ'),
                 func: function (trData) {

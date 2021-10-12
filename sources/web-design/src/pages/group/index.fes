@@ -49,7 +49,7 @@
                 <Column prop="modifyTime" :name="$t('group.GXSJ')" />
                 <Column :name="$t('group.XQ')" :action="groupDetail" />
             </Wb-table>
-            <Pagination class="groupPagination page-loc" :loking="pagination.locking" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
+            <Pagination class="groupPagination page-loc" :loking="pagination.locking" :size-list="sizeList" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
         </Row>
         <weLoading v-show="FesFesx.isLoading" />
     </diV>
@@ -70,6 +70,7 @@ export default {
                 total: 10,
                 locking: false
             },
+            sizeList: [10, 20, 30],
             groupDetail: [
                 {
                     text: this.$t('group.CKXQ'),
@@ -158,7 +159,7 @@ export default {
         },
         deleteGroupList() {
             const userRole = this.FesStorage.get('userRole');
-            if (!['super', 'admin'].includes(userRole)) return this.$Toast.warn($t('message.newAllPage.Nodeletegrouppermissions'));
+            if (!['super', 'admin'].includes(userRole)) return this.$Toast.warn(this.$t('message.newAllPage.Nodeletegrouppermissions'));
             this.deleteList = this.$refs.groupTable.getSelected();
             if (this.deleteList.length <= 0) {
                 this.$Toast(this.$t('group.XZYSCDFZ'));

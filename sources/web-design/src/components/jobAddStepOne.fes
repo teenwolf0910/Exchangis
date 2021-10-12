@@ -149,8 +149,8 @@
                                 </Wb-select>
                             </Cell>
                             <Cell span="4" class="text-dec">
-                                <Wb-button v-if="index === 0" icon="plus" @click="addCodition" />
-                                <Wb-button v-if="index !== 0 || currentLink.length > 1" icon="minus" @click="minusCodition(index)" />
+                                <Wb-button v-if="index === 0" icon="ios-add" @click="addCodition" />
+                                <Wb-button v-if="index !== 0 || currentLink.length > 1" icon="ios-remove" @click="minusCodition(index)" />
                             </Cell>
                         </Row>
                     </Form-item>
@@ -440,7 +440,6 @@ export default {
                 this.getSourceDataList(value);
             } else if (value === SOURCETYPE.MYSQL) {
                 this.FesFesx.set('firstIsSelectRecord', TRANSFERTYPE.RECORD);
-
                 this.tdsqlData.type = value;
                 this.getSourceDataList(value);
             } else if (value === SOURCETYPE.HDFS) {
@@ -635,7 +634,6 @@ export default {
             const values = this.greenplumValue.tables;
             values.unshift(value);
             this.greenplumValue.tables = values.map(item => {return item})
-
         },
         addCodition() {
             const pushAction = () => {

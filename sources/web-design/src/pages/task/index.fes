@@ -46,7 +46,7 @@
                 <Column :component="tooltipComponent" width="40px" :name="$t('task.CS')" />
                 <Column :component="operationComponent" :name="$t('task.CZ')" width="180px" />
             </Wb-table>
-                <Pagination class="page-center" :loking="pagination.locking" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
+                <Pagination class="page-center" :size-list="sizeList" :loking="pagination.locking" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
         </fes-list-panel>
         <weModal ref="detailLogModal" v-model="detailShow" :name="$t('task.RWYXRZ')" width="1000" :footer-disable="false" @onConfirm="detailLog_close" @onClose="detailLog_close">
             <div class="ui-input-swap ui-input-textarea textarea-height">
@@ -114,6 +114,7 @@ export default {
                 current: 1,
                 total: 0
             },
+            sizeList: [10, 20, 30],
             logLock: false,
             logTimer: null,
             logStatusTimer: null,

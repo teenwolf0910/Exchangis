@@ -98,7 +98,7 @@ export default {
                         message: `${this.$t('sys.Musthavealetter')}，${this.$t('sys.Andonlysupportletter')}、${this.$t('sys.digital')}、${this.$t('sys.Theunderline')}`,
                         trigger: 'change'
                     },
-                    {message: `${this.$t('sys.Namecannotbemorethanlength')}200`, max: 200}
+                    {message: `${this.$t('sys.Namecannotbemorethanlength')}20`, max: 20}
                 ],
                 firstPassword: [
                     // {required: true, message: $t('sys.Pleaseentertheinitialpassword')}
