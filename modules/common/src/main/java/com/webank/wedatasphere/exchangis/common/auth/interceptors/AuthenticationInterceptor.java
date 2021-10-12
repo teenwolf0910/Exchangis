@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +66,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor{
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(conf.enable() && !request.getRequestURI().equals(conf.authLoginUrl()) &&
-                                !request.getRequestURI().equals(conf.authRedirectUrl())){
+                                !request.getRequestURI().equals(conf.authRedirectUrl()) &&
+                                !conf.getCtyunCasLoginURI().equals(request.getRequestURI()) ){
             if(null == authTokenService){
                 authTokenService = AppUtil.getBean(AuthTokenService.class);
             }
@@ -102,16 +104,24 @@ public class AuthenticationInterceptor implements HandlerInterceptor{
         return true;
     }
 
+    private String ctyunRedirectUrl() {
+        return "https://www.ctyun.cn/login?service=" + conf.getctyunCasLoginUrl();
+    }
+
     private void sendRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
         StringBuilder redirectBuilder = new StringBuilder();
         String loginUrl = conf.authLoginUrl();
-        redirectBuilder.append(loginUrl);
-        if(conf.authCasSwitch()) {
-            //Append CAS parameters
-            redirectBuilder.append("?")
-                    .append(SSO_REDIRECT_SERVICE + "=").append(URLEncoder.encode(conf.gatewayUrl(), "UTF-8"));
-            if (StringUtils.isNotBlank(conf.casSystemId())) {
-                redirectBuilder.append("&" + SSO_REDIRECT_SYSTEMID + "=").append(conf.casSystemId());
+        if(conf.getCtyunCasEnable()){
+            redirectBuilder.append(ctyunRedirectUrl());
+        }else {
+            redirectBuilder.append(loginUrl);
+            if(conf.authCasSwitch()) {
+                //Append CAS parameters
+                redirectBuilder.append("?")
+                        .append(SSO_REDIRECT_SERVICE + "=").append(URLEncoder.encode(conf.gatewayUrl(), "UTF-8"));
+                if (StringUtils.isNotBlank(conf.casSystemId())) {
+                    redirectBuilder.append("&" + SSO_REDIRECT_SYSTEMID + "=").append(conf.casSystemId());
+                }
             }
         }
         //Jump to gateway url

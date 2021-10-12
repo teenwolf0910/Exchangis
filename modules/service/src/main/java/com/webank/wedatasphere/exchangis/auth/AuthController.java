@@ -30,18 +30,18 @@ import com.webank.wedatasphere.exchangis.common.auth.AuthTokenHelper;
 import com.webank.wedatasphere.exchangis.common.util.CryptoUtils;
 import com.webank.wedatasphere.exchangis.common.util.json.Json;
 import com.webank.wedatasphere.exchangis.common.util.spring.AppUtil;
+import com.webank.wedatasphere.exchangis.ctyun.sso.CasValidate;
 import com.webank.wedatasphere.exchangis.user.domain.UserInfo;
 import com.webank.wedatasphere.exchangis.user.service.UserInfoService;
 import groovy.util.logging.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import static com.webank.wedatasphere.exchangis.common.auth.AuthConstraints.DEFAULT_SSO_COOKIE;
 
 import javax.annotation.Resource;
@@ -69,6 +69,7 @@ public class AuthController extends ExceptionResolverContext {
 
     @Resource
     private AuthConfiguration authConfiguration;
+
     @Resource
     private AuthTokenHelper tokenBuilder;
 
@@ -186,5 +187,50 @@ public class AuthController extends ExceptionResolverContext {
         }
         return new Response<>().errorResponse(CodeConstant.LOGIN_FAIL, null,
                 this.informationSwitch("exchange.auth.login.fail"));
+    }
+
+    @RequestMapping(value="/casSso", method= RequestMethod.GET)
+    public Response<Object> ctyunCasSSO(
+            @RequestParam(value="ticket", required=true) String ticket,
+            HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) throws UnsupportedEncodingException {
+        LOG.info("ctyun sso login ticket: {}", ticket);
+        try {
+            JSONObject result = CasValidate.validate(ticket, authConfiguration);
+            String username = (String) result.get("name");
+            String email = (String) result.get("email");
+            String userId = (String) result.get("userId");
+            LOG.info("username: {}", username);
+
+
+            UserInfo userInfo = userInfoService.selectDetailByUsername(username);
+            if (userInfo == null) {
+                userInfo = userInfoService.createUser(username);
+            }
+            userInfo.setUserName(null);
+            userInfo.setPassword(null);
+            userInfo.setId(null);
+            Map<String, String> jsonMap = Json.fromJson(Json.toJson(userInfo, null), Map.class);
+
+            AuthTokenBean tokenBean = new AuthTokenBean();
+            tokenBean.getHeaders().put(AuthConstraints.X_AUTH_ID, username);
+            jsonMap.put(AuthConstraints.X_AUTH_ID, username);
+            tokenBean.getClaims().putAll(jsonMap);
+            String token = tokenBuilder.build(tokenBean);
+
+            LOG.info("Add token: " + token.substring(0, 6) + "**** to login response");
+
+            Cookie cookie = new Cookie(DEFAULT_SSO_COOKIE, token);
+            cookie.setPath("/");
+            cookie.setMaxAge(3600);
+            httpServletResponse.setHeader(AuthConstraints.X_AUTH_ID, username);
+            httpServletResponse.addCookie(cookie);
+            httpServletResponse.sendRedirect(authConfiguration.getExchangisHome());
+            return null;
+
+        } catch (Exception e) {
+            LOG.error("Failed to redirect to other page, caused by: {}", e.getMessage(), e);
+            return new Response<>().successResponse("Failed to redirect to other page.");
+        }
     }
 }

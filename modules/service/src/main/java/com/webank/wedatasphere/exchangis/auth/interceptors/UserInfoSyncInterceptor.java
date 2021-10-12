@@ -57,7 +57,8 @@ public class UserInfoSyncInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(conf.enable() && !request.getRequestURI().equals(conf.authLoginUrl()) &&
-                                 !request.getRequestURI().equals(conf.authRedirectUrl())) {
+                                 !request.getRequestURI().equals(conf.authRedirectUrl()) &&
+                                 !request.getRequestURI().equals(conf.getCtyunCasLoginURI())) {
             String token = AppUtil.getCookieValue(request, AuthConstraints.DEFAULT_SSO_COOKIE);
             Map<String, String> authMessage = authTokenHelper.getAuthMessage(token);
             String username = authMessage.get("loginid");

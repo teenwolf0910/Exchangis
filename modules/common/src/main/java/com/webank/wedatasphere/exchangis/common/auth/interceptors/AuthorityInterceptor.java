@@ -59,8 +59,10 @@ public class AuthorityInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(conf.enable() && !request.getRequestURI().equals(conf.authLoginUrl())
-                                && !request.getRequestURI().equals(conf.authRedirectUrl())) {
+                                && !request.getRequestURI().equals(conf.authRedirectUrl())
+                                && !conf.getCtyunCasLoginURI().equals(request.getRequestURI())) {
             String token = AppUtil.getCookieValue(request, AuthConstraints.DEFAULT_SSO_COOKIE);
+            LOG.info("ss:"+conf.getCtyunCasLoginURI()+"|"+request.getRequestURI()+"|"+!request.getRequestURI().equals(conf.getCtyunCasLoginURI()));
             Map<String, String> headers = authTokenHelper.getAuthHeader(token);
             String loginId = headers.get(X_AUTH_ID);
             String allowUriJson = headers.get(ALLOWEDURIS);
