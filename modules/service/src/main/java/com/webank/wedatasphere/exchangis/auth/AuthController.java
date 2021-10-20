@@ -32,7 +32,11 @@ import com.webank.wedatasphere.exchangis.common.util.json.Json;
 import com.webank.wedatasphere.exchangis.common.util.spring.AppUtil;
 import com.webank.wedatasphere.exchangis.ctyun.sso.CasValidate;
 import com.webank.wedatasphere.exchangis.user.domain.UserInfo;
+import com.webank.wedatasphere.exchangis.userstatus.domain.UserStatusInfo;
+import com.webank.wedatasphere.exchangis.userstatus.domain.WorkInfo;
+import com.webank.wedatasphere.exchangis.userstatus.domain.WorkOrderInfo;
 import com.webank.wedatasphere.exchangis.user.service.UserInfoService;
+import com.webank.wedatasphere.exchangis.userstatus.service.UserStatusService;
 import groovy.util.logging.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,9 +53,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.ws.rs.core.Context;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -154,6 +162,13 @@ public class AuthController extends ExceptionResolverContext {
                                   HttpServletRequest request, HttpServletResponse response) throws Exception {
         UserInfo userInfo = userInfoService.selectDetailByUsername(token.getLoginUser());
         if(null != userInfo){
+//            if(userInfo.getUserType()==2){
+//                //过滤管理员账户白名单
+//                String ipAddress=getRealIP(request);
+//                if(userInfoService.selectIp(ipAddress)==null){
+//                    return  new Response<>().errorResponse(CodeConstant.LOGIN_FAIL,null,"IP不在白名单内");
+//                }
+//            }
             String storedPassword = userInfo.getPassword();
             String loginPwd = token.getLoginPwd();
             //Decrypt login password
@@ -188,7 +203,40 @@ public class AuthController extends ExceptionResolverContext {
         return new Response<>().errorResponse(CodeConstant.LOGIN_FAIL, null,
                 this.informationSwitch("exchange.auth.login.fail"));
     }
-
+    public static String getRealIP(HttpServletRequest request) {
+               String ip = request.getHeader("x-forwarded-for");
+               if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
+                      // 多次反向代理后会有多个ip值，第一个ip才是真实ip
+                         if( ip.indexOf(",")!=-1 ){
+                                 ip = ip.split(",")[0];
+                             }
+                    }
+                 if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                        ip = request.getHeader("Proxy-Client-IP");
+                        System.out.println("Proxy-Client-IP ip: " + ip);
+                    }
+                if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                        ip = request.getHeader("WL-Proxy-Client-IP");
+                        System.out.println("WL-Proxy-Client-IP ip: " + ip);
+                    }
+                if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                         ip = request.getHeader("HTTP_CLIENT_IP");
+                         System.out.println("HTTP_CLIENT_IP ip: " + ip);
+                     }
+                if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                        ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+                        System.out.println("HTTP_X_FORWARDED_FOR ip: " + ip);
+                    }
+                if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                         ip = request.getHeader("X-Real-IP");
+                         System.out.println("X-Real-IP ip: " + ip);
+                     }
+               if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                         ip = request.getRemoteAddr();
+                         System.out.println("getRemoteAddr ip: " + ip);
+                     }
+                return ip;
+            }
     @RequestMapping(value="/casSso", method= RequestMethod.GET)
     public Response<Object> ctyunCasSSO(
             @RequestParam(value="ticket", required=true) String ticket,

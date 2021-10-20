@@ -1,0 +1,188 @@
+package com.webank.wedatasphere.exchangis.userstatus;
+
+import com.alibaba.fastjson.JSON;
+import com.webank.wedatasphere.exchangis.common.controller.ExceptionResolverContext;
+import com.webank.wedatasphere.exchangis.common.controller.Response;
+import com.webank.wedatasphere.exchangis.userstatus.domain.UserStatusInfo;
+import com.webank.wedatasphere.exchangis.userstatus.domain.WorkInfo;
+import com.webank.wedatasphere.exchangis.userstatus.domain.WorkOrderInfo;
+import com.webank.wedatasphere.exchangis.userstatus.service.UserStatusService;
+import groovy.util.logging.Slf4j;
+import org.json.JSONObject;
+import org.springframework.web.bind.annotation.*;
+
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * @ClassName: UserStatusController
+ * @Description: 用户状态
+ * @author: lijw
+ * @date: 2021/10/13 9:28
+ */
+@RestController
+@Slf4j
+@RequestMapping("/api/v1/exchangis")
+public class UserStatusController extends ExceptionResolverContext {
+
+    @Resource
+    UserStatusService userStatusService;
+    //查询用户状态
+    @RequestMapping(value="/status/{userId}", method= RequestMethod.GET)
+    public Response<Object> serviceStatus(@Context HttpServletRequest request, @PathVariable("userId")String userId) throws  Exception{
+        if(userStatusService.searchUser(userId)==null){
+            return  new Response<>().successResponse("该用户暂未开通服务");
+        }
+        else {
+            UserStatusInfo userStatusInfo = userStatusService.searchUser(userId);
+            String end_time = userStatusInfo.getEnd_time();
+            String unsub_time=userStatusInfo.getUnsub_time();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date endTime  = format.parse(end_time);
+            Date nowTime = new Date();
+            if(nowTime.compareTo(endTime)<0&&unsub_time==null){
+                return  new Response<>().successResponse("该用户可用该服务");
+            }
+            else {
+                return  new Response<>().successResponse("该用户服务已到期");
+            }
+        }
+    }
+
+    //获取用户订单信息
+    @RequestMapping(value="/search/{userId}", method= RequestMethod.GET)
+    public  Response<Object> searchWorkInfo(@Context HttpServletRequest request,@PathVariable("userId") String userId) throws  Exception{
+        if(userStatusService.searchWorkInfo(userId)==null){
+            return  new Response<>().successResponse("该用户暂无订单信息");
+        }
+        else {
+            return  new Response<>().successResponse(userStatusService.searchWorkInfo(userId));
+        }
+    }
+
+    //处理用户工单信息
+    @RequestMapping(value = "/process", method = {RequestMethod.POST})
+    public Response<Object> construction(@Valid @RequestBody WorkInfo workInfo) throws  Exception {
+        UserStatusInfo userStatusInfo=new UserStatusInfo();
+        WorkOrderInfo workOrderInfo = new WorkOrderInfo();
+        String userId = workInfo.getUserId();
+        String accountId = workInfo.getAccountId();
+        userStatusInfo.setUser_id(userId);
+        userStatusInfo.setAccount_id(accountId);
+        int workOrderType = workInfo.getWorkOrderType();
+        int cycleCnt = workInfo.getWorkOrderItems().get(0).getWorkOrderItemConfig().getCycleCnt();
+        int cycleType = workInfo.getWorkOrderItems().get(0).getWorkOrderItemConfig().getCycleType();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar calendar=Calendar.getInstance();
+        workOrderInfo.setUser_id(userId);
+        workOrderInfo.setWorkOrder_id(workInfo.getWorkOrderId());
+        workOrderInfo.setWorkOrder_type(workInfo.getWorkOrderType());
+        workOrderInfo.setCycleCnt(cycleCnt);
+        workOrderInfo.setCycleType(cycleType);
+        workOrderInfo.setAccount_id(workInfo.getAccountId());
+        workOrderInfo.setMasterOrder_id(workInfo.getMasterOrderId());
+        workOrderInfo.setServiceTag(workInfo.getServiceTag());
+        workOrderInfo.setResource_id(workInfo.getResourceId());
+        workOrderInfo.setResourceType(workInfo.getResourceType());
+        workOrderInfo.setWorkerOrderConfig(workInfo.getWorkOrderConfig());
+        workOrderInfo.setWorkOrderItems(JSON.toJSONString(workInfo.getWorkOrderItems().get(0)));
+        workOrderInfo.setOperTime(sdf.format(new Date()));
+        userStatusService.insertWorkOrder(workOrderInfo);
+        //订购
+        if(workOrderType==1){
+            String nowTime=sdf.format(new Date());
+            String endTime="";
+            calendar.setTime(new Date());
+            if(cycleType==3){
+                calendar.add(Calendar.MONTH,cycleCnt);
+                Date time = calendar.getTime();
+                endTime= sdf.format(time);
+            }
+            if(cycleType==5){
+                calendar.add(Calendar.YEAR,cycleCnt);
+                Date time = calendar.getTime();
+                endTime= sdf.format(time);
+            }
+            if(cycleType==6){
+                calendar.add(Calendar.YEAR,2*cycleCnt);
+                Date time = calendar.getTime();
+                endTime= sdf.format(time);
+            }
+            if(cycleType==7){
+                calendar.add(Calendar.YEAR,3*cycleCnt);
+                Date time = calendar.getTime();
+                endTime= sdf.format(time);
+            }
+            userStatusInfo.setStart_time(nowTime);
+            userStatusInfo.setEnd_time(endTime);
+            userStatusInfo.setUnsub_time(null);
+            if(userStatusService.searchUser(userId)!=null){
+                userStatusService.updateUser(userStatusInfo);
+            }
+            else {
+                userStatusService.addUser(userStatusInfo);
+            }
+
+            return new Response<>().successResponse("订购成功");
+        }
+        //2.续订
+        if(workOrderType==2){
+            UserStatusInfo user = userStatusService.searchUser(userId);
+            String end_time = user.getEnd_time();
+            Date date = sdf.parse(end_time);
+            String endTime="";
+            calendar.setTime(date);
+            if(cycleType==3){
+                calendar.add(Calendar.MONTH,cycleCnt);
+                Date time = calendar.getTime();
+                endTime= sdf.format(time);
+            }
+            if(cycleType==5){
+                calendar.add(Calendar.YEAR,cycleCnt);
+                Date time = calendar.getTime();
+                endTime= sdf.format(time);
+            }
+            if(cycleType==6){
+                calendar.add(Calendar.YEAR,2*cycleCnt);
+                Date time = calendar.getTime();
+                endTime= sdf.format(time);
+            }
+            if(cycleType==7){
+                calendar.add(Calendar.YEAR,3*cycleCnt);
+                Date time = calendar.getTime();
+                endTime= sdf.format(time);
+            }
+            userStatusService.updateUserByUserId(userId,endTime);
+            return new Response<>().successResponse("续订成功");
+        }
+        //3.退订
+        if(workOrderType==3){
+            calendar.setTime(new Date());
+            calendar.add(Calendar.MINUTE,-1);
+            Date time = calendar.getTime();
+            String unsubTime = sdf.format(time);
+            userStatusService.unsubUserByUserId(userId,unsubTime);
+            return new Response<>().successResponse("退订成功");
+        }
+        if(workOrderType==6 || workOrderType==7){
+            calendar.setTime(new Date());
+            calendar.add(Calendar.MINUTE,-1);
+            Date time = calendar.getTime();
+            String nowTime = sdf.format(time);
+            userStatusService.updateUserByUserId(userId,nowTime);
+            return new Response<>().successResponse("用户已到期");
+        }
+        return  null;
+    }
+
+
+
+}
