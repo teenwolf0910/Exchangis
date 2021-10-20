@@ -46,7 +46,8 @@ public class UserStatusServiceImpl implements UserStatusService {
     }
 
     @Override
-    public void updateUser(UserStatusInfo userStatusInfo) {
+    public void updateUser(UserStatusInfo userStatusInfo)
+    {
         userStatusInfoDao.updateUser(userStatusInfo);
     }
 
