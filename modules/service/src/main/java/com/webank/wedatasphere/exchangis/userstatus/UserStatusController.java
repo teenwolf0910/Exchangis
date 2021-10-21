@@ -20,6 +20,7 @@ import javax.ws.rs.core.Context;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -38,16 +39,25 @@ public class UserStatusController extends ExceptionResolverContext {
     //查询用户状态
     @RequestMapping(value="/status/{userId}", method= RequestMethod.GET)
     public Response<Object> serviceStatus(@Context HttpServletRequest request, @PathVariable("userId")String userId) throws  Exception{
+        Response<Object> result = new Response<>();
+        result.setCode(200);
         if(userStatusService.searchUser(userId)==null){
-            return  new Response<>().successResponse("该用户暂未开通服务");
+            result.setData(2);
+            result.setMessage("该用户暂未开通服务");
+            return  result;
         }
         else {
             UserStatusInfo userStatusInfo = userStatusService.searchUser(userId);
             int status = userStatusInfo.getStatus();
-            if(status==1)
-            return new Response<>().successResponse("用户可用");
+            if(status==1){
+                result.setData(1);
+                result.setMessage("用户可用");
+                return  result;
+            }
             else{
-                return  new Response<>().successResponse("用户暂不可用");
+                result.setData(0);
+                result.setMessage("用户暂不可用");
+                return  result;
             }
         }
     }
@@ -55,17 +65,25 @@ public class UserStatusController extends ExceptionResolverContext {
     //获取用户订单信息
     @RequestMapping(value="/search/{userId}", method= RequestMethod.GET)
     public  Response<Object> searchWorkInfo(@Context HttpServletRequest request,@PathVariable("userId") String userId) throws  Exception{
+        Response<Object> result = new Response<>();
+        result.setCode(200);
         if(userStatusService.searchWorkInfo(userId)==null){
-            return  new Response<>().successResponse("该用户暂无订单信息");
+            result.setData(" ");
+            result.setMessage("该用户暂无订单信息");
+            return  result;
         }
         else {
-            return  new Response<>().successResponse(userStatusService.searchWorkInfo(userId));
+            result.setData(userStatusService.searchWorkInfo(userId));
+            result.setMessage("success");
+            return  result;
         }
     }
 
     //处理用户工单信息
     @RequestMapping(value = "/process", method = {RequestMethod.POST})
     public Response<Object> construction(@Valid @RequestBody WorkInfo workInfo) throws  Exception {
+        Response<Object> result = new Response<>();
+        result.setCode(200);
         int cycleCnt=0;
         int     cycleType = 0;
         UserStatusInfo userStatusInfo=new UserStatusInfo();
@@ -133,13 +151,17 @@ public class UserStatusController extends ExceptionResolverContext {
             workOrderInfo.setExpireTime(endTime);
             workOrderInfo.setStatus(1);
             userStatusService.insertWorkOrder(workOrderInfo);
-            return new Response<>().successResponse("订购成功");
+            result.setData(true);
+            result.setMessage("success");
+            return  result;
         }
         //2.续订
         if(workOrderType==2){
             UserStatusInfo user = userStatusService.searchUser(userId);
             if(user==null){
-                return new Response<>().successResponse("请先开通账号");
+                result.setData(false);
+                result.setMessage("请先开通账号");
+                return  result;
             }
             String end_time = user.getEnd_time();
             Date date = sdf.parse(end_time);
@@ -168,13 +190,17 @@ public class UserStatusController extends ExceptionResolverContext {
             userStatusService.insertWorkOrder(workOrderInfo);
             userStatusService.updateWorkOrderInfo(userId,workInfo.getResourceId(),endTime,1);
             userStatusService.updateUserByUserId(userId,endTime,1);
-            return new Response<>().successResponse("续订成功");
+            result.setData(true);
+            result.setMessage("success");
+            return  result;
         }
         //3.退订
         if(workOrderType==5){
             UserStatusInfo user = userStatusService.searchUser(userId);
             if(user==null){
-                return new Response<>().successResponse("请先开通账号");
+                result.setData(false);
+                result.setMessage("请先开通账号");
+                return  result;
             }
             calendar.setTime(new Date());
             calendar.add(Calendar.MINUTE,-1);
@@ -188,7 +214,9 @@ public class UserStatusController extends ExceptionResolverContext {
         if(workOrderType==6 ){
             UserStatusInfo user = userStatusService.searchUser(userId);
             if(user==null){
-                return new Response<>().successResponse("请先开通账号");
+                result.setData(false);
+                result.setMessage("请先开通账号");
+                return  result;
             }
             calendar.setTime(new Date());
             calendar.add(Calendar.MINUTE,-1);
@@ -197,12 +225,16 @@ public class UserStatusController extends ExceptionResolverContext {
             userStatusService.insertWorkOrder(workOrderInfo);
             userStatusService.updateUserByUserId(userId,nowTime,0);
             userStatusService.updateWorkOrderInfo(userId,workInfo.getResourceId(),nowTime,0);
-            return new Response<>().successResponse("用户已到期");
+            result.setData(true);
+            result.setMessage("success");
+            return  result;
         }
         if( workOrderType==7){
             UserStatusInfo user = userStatusService.searchUser(userId);
             if(user==null){
-                return new Response<>().successResponse("请先开通账号");
+                result.setData(false);
+                result.setMessage("请先开通账号");
+                return  result;
             }
             calendar.setTime(new Date());
             calendar.add(Calendar.MINUTE,-1);
@@ -211,7 +243,9 @@ public class UserStatusController extends ExceptionResolverContext {
             userStatusService.insertWorkOrder(workOrderInfo);
             userStatusService.updateUserByUserId(userId,nowTime,0);
             userStatusService.updateWorkOrderInfo(userId,workInfo.getResourceId(),nowTime,0);
-            return new Response<>().successResponse("用户已到期");
+            result.setData(true);
+            result.setMessage("success");
+            return  result;
         }
         return  null;
     }
