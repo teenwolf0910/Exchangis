@@ -120,11 +120,13 @@
                 </div>
             </div>
             <div class="page-pagination">
-                <Pagination :loking="pagination.locking" :current="pagination.current"
+                <Pagination :loking="pagination.locking" :current="pagination.current" :size-list="sizeList"
                             :size="pagination.size" :total="pagination.total" @on-change="pageChange" />
             </div>
         </div>
+        <!-- 新增数据源对话框 -->
         <modal ref="ds_choose" :title="$t('manager.XZSJK')" :close-on-click-shadow="false" width="600">
+            <!-- 关系型数据库 -->
             <Panel :title="$t('manager.GXSJK')" class="form-inner-panel">
                 <Wb-button class="iconfont " @click="showAddWind('MYSQL',`MYSQL ${$t('manager.SJY')}`)">
                 MYSQL {{ $t('manager.SJY') }}
@@ -138,6 +140,7 @@
                 GREENPLUM {{ $t('manager.SJY') }}
                 </Wb-button>
             </Panel>
+            <!-- 大数据存储 -->
             <Panel :title="$t('manager.DSJCC')" class="form-inner-panel">
                 <Wb-button class="iconfont " @click="showAddWind('HIVE',`HIVE ${$t('manager.SJY')}`)">
                 HIVE {{ $t('manager.SJK') }}
@@ -147,9 +150,11 @@
                     HDFS
                 </Wb-button>
             </Panel>
+            <!-- 半结构化存储 -->
             <Panel :title="$t('manager.BJGHCC')" class="form-inner-panel">
                 {{ $t('manager.ZW') }}
             </Panel>
+            <!-- 无结构化存储 -->
             <Panel :title="$t('manager.WJGHCC')" class="form-inner-panel">
                 <Wb-button class="iconfont" @click="showAddWind('SFTP',`SFTP ${$t('manager.FW')}`)">
                 SFTP {{ $t('manager.FW') }}
@@ -160,12 +165,12 @@
                 </Wb-button>
             </Panel>
         </modal>
+        <!-- 配置新增数据源 -->
         <weModal
             v-model="sourceFormShow"
             :footer-disable="false"
             :title="formTitle"
-            :width="650"
->
+            :width="650">
             <sourceForm
                 v-if="sourceFormShow"
                 :current-type="currentType"
@@ -174,8 +179,7 @@
                 :project-data-list="projectDataList"
                 @add="sourceAdd"
                 @update="sourceUpdate"
-                @connect="sourceConnect"
-/>
+                @connect="sourceConnect"/>
         </weModal>
         <weLoading v-show="loading" />
     </main>
@@ -205,6 +209,7 @@ export default {
                 current: 1,
                 total: 0
             },
+            sizeList: [10, 20, 30],
             sourceData: [],
             sourceFormShow: false,
             formTitle: '',
@@ -340,6 +345,7 @@ export default {
                 if (item.sourceType === 'hdfs') return `HDFS${this.$t('manager.SJY')}`;
                 if (item.sourceType === 'sftp') return `SFTP${this.$t('manager.SJY')}`;
                 if (item.sourceType === 'mysql') return `MYSQL${this.$t('manager.SJY')}`;
+                if (item.sourceType === 'greenplum') return `GREENPLUM${this.$t('manager.SJY')}`;
             };
             this.sourceFormShow = true;
             this.formTitle = title();
@@ -402,10 +408,10 @@ export default {
 }
 .main-content {
     width: 97%;
+    min-height: 80%;
     margin: 0 auto;
     background-color: #fff;
     margin-top: 25px;
-    min-height: 500px;
     border-radius: 10px;
     box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
     overflow: hidden;

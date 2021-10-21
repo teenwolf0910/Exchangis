@@ -11,7 +11,7 @@
         </div>
         <Panel :title="$t('group.JCXX')">
                 <Wb-form ref="formValidate" class="group-detail-form" label-position="left" :label-width="100">
-                    <Form-item :label="$t('group.FZM')" prop="groupName" :rule="[{required: true, message: $t('group.FZMBNK')}, {type: 'string', pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5\[\]]*$/, message: $t('group.ZCZZM'), trigger: 'blur'}]">
+                    <Form-item :label="$t('group.FZM')" prop="groupName" :rule="[{required: true, message: $t('group.FZMBNK')}, {max: 20, message: $t('group.FZMLENMSG', {len: 20})}, {type: 'string', pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5\[\]]*$/, message: $t('group.ZCZZM'), trigger: 'blur'}]">
                         <wb-input v-model="groupName" :placeholder="$t('group.QSR')" type="text" :disabled="!isAdmin" />
                     </Form-item>
                     <Form-item :label="$t('group.FZMS')">

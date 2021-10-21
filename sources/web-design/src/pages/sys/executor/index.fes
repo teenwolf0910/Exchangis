@@ -24,7 +24,7 @@
                 <Column prop="cpuRate" :name="$t('sys.executor.SYL')" />
                 <Column :name="$t('sys.executor.CZ')" :action="exeAction" />
             </Wb-table>
-            <Pagination class="page-center" :loking="pagination.locking" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
+            <Pagination class="page-center" :size-list="sizeList" :loking="pagination.locking" :current="pagination.current" :size="pagination.size" :total="pagination.total" @on-change="changePage" />
         </fes-list-panel>
         <weModal v-model="bindlabelShow" :title="$t('sys.Bindingthenodelabel')" :closable="false" @onConfirm="addConfirm">
             <Wb-form ref="source_validate" label-position="left">
@@ -56,6 +56,7 @@ export default {
                 current: 1,
                 total: 0
             },
+            sizeList: [10, 20, 30],
             bindlabelShow: false,
             tabIds: [],
             tabList: [],

@@ -290,7 +290,7 @@ export default {
                     sourceArr: []
                 };
                 this.newObject = newObject;
-                if (this.editData && this.editData.config.columnMaps && this.editData.config.columnMaps.length > 0) {
+                if (addDataTwo.type !== "local_fs" && this.editData && this.editData.config.columnMaps && this.editData.config.columnMaps.length > 0) {
                     const flag = true;
                     if (this.addData.addData1.table.length !== this.editData.config.dataSrcParams.table.length || this.addData.addData1.table.toString !== this.editData.config.dataSrcParams.table.toString) {
                         this.editData.config.columnMaps = [];
@@ -376,7 +376,6 @@ export default {
                             obj.sourceWord = this.partThreeData[i % this.partThreeData.length].name;
                             obj.sourceType = this.partThreeData[i % this.partThreeData.length].type;
                             sourceArr.push(obj);
-
                         }
                         let newObject = {};
                         newObject.sourceArr = sourceArr;

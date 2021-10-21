@@ -108,7 +108,6 @@ export default {
             this.$emit('dbSeleted', val);
         },
         tableValueChange(val) {
-            
             this.$emit('tableValueChange', val);
         },
         filterSearch(val) {

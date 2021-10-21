@@ -61,7 +61,7 @@
                 </div>
             </div>
             <div class="page-pagination">
-                <Pagination :loking="pagination.locking" :current="pagination.current"
+                <Pagination :loking="pagination.locking" :current="pagination.current" :size-list="sizeList"
                             :size="pagination.size" :total="pagination.total" @on-change="pageChange" />
             </div>
         </div>
@@ -97,12 +97,14 @@ export default {
                 current: 1,
                 total: 0
             },
+            sizeList: [10, 20, 30],
             executeName: '',
             executeDes: '',
             addExecutor: false,
             sourceRule: {
                 executeName: [
                     {required: true, message: this.$t('sys.Pleasefillinusername')},
+                    {max: 20, message: this.$t('sys.userNameLenMsg', {len: 20})},
                     {
                         type: 'string',
                         pattern: /^[a-zA-Z][a-zA-Z0-9_]*$/,
@@ -206,7 +208,7 @@ export default {
     margin: 0 auto;
     background-color: #fff;
     margin-top: 25px;
-    min-height: 500px;
+    min-height: 80%;
     border-radius: 10px;
     box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
     overflow: hidden;

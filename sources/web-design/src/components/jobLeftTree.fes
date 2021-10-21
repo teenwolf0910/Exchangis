@@ -44,7 +44,7 @@ export default {
     FesData() {
         return {
             treeData: [],
-            actions: [ this.$t('components.ZJZJD'), this.$t('components.SCJD')],
+            actions: [ this.$t('components.ZJZJD'), this.$t('components.SCJD')], // 增加子节点 删除节点
             test: '',
             taskName: '',
             taskDesc: '',
@@ -101,12 +101,11 @@ export default {
             this.currentId = node.id;
             if (index === 0) {
                 if (node.level === 2) {
-                    return this.$Toast.warn($t('message.newComponents.Onlysupportsnomorethanthreelayersofengineering'));
+                    return this.$Toast.warn(this.$t('message.newComponents.Onlysupportsnomorethanthreelayersofengineering'));
                 }
                 this.$refs.addTree.show();
             }
             if (index === 1) {
-
                 this.$Message.confirm(this.$t('components.SC'), this.$t('components.SFSC')).then((item) => {
                     if (item === 0) {
                         this.FesFesx.set('isLoading', true);

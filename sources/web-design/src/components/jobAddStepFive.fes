@@ -170,7 +170,8 @@ export default {
             jobParams: [],
             vaildateRule: {
                 jobName: [
-                    {required: true, message: this.$t('components.TXRWM')}
+                    {required: true, message: this.$t('components.TXRWM')},
+                    {max: 20, message: this.$t('components.RWMLENMSG', {len: 20})}
                 ],
                 executeNode: [
                     {required: true, message: this.$t('message.newComponents.Pleaseselecttheexecutionnode')}

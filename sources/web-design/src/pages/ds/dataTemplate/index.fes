@@ -88,7 +88,7 @@
                 </div>
             </div>
             <div class="page-pagination">
-                <Pagination :loking="pagination.locking" :current="pagination.current"
+                <Pagination :loking="pagination.locking" :current="pagination.current" :size-list="sizeList"
                             :size="pagination.size" :total="pagination.total" @on-change="pageChange" />
             </div>
         </div>
@@ -342,20 +342,21 @@ export default {
             querySourceType: '',
             queryModelName: '',
             pagination: {
-                size: 11,
+                size: 10,
                 current: 1,
                 total: 10
             },
             actionType: '', // add modify update
             templateList: [],
             currentTemplateID: '',
+            sizeList: [10, 20, 30],
             sourceRule: {
                 templateSourceType: [
                     {required: true, message: this.$t('dataTemplate.SZYLXBMK')}
                 ],
                 templateName: [
                     {required: true, message: this.$t('dataTemplate.MBMCBLK')},
-                    {message: this.$t('dataTemplate.MCCDBNDY'), max: 100},
+                    {message: this.$t('dataTemplate.MCCDBNDY'), max: 20},
                     {type: 'string', pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5.:]*$/, message: this.$t('dataTemplate.ZU'), trigger: 'change'}
                 ],
                 templateDesc: [
@@ -494,6 +495,7 @@ export default {
         addAction() {
             this.addShow = true;
             this.actionType = 'add';
+            this.currentTemplateID = "";
             this.init();
         },
         sourceMetaPlus() {

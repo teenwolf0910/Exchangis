@@ -1,51 +1,21 @@
-<style scoped lang="scss">
-    .margin-bottom {
-        margin-bottom: 10px;
-        .icon-plus {
-            cursor: pointer;
-        }
-        .text-dec {
-            text-align: left;
-            margin-left: 5px;
-        }
-    }
-    .display-none {
-        padding-bottom: 0px;
-        display: none;
-    }
-    .float-right {
-        float: right;
-        margin-right: 25px;
-    }
-    .template-selecct {
-        width: 70%;
-    }
-    .refresh {
-        padding: 3px 6px;
-        margin-right: 10px;
-        color: #3399ff;
-        cursor: pointer;
-    }
-    .create-template {
-        color: #3399ff;
-        cursor: pointer;
-    }
-</style>
-
 <template>
     <Wb-form ref="source_validate" label-position="left" :label-width="130" :rule="sourceRule">
+        <!-- 数据源名称 -->
         <Form-item :label="$t('uiTemplate.SJYMC')" prop="name">
             <wb-input v-model="sourceForm.name" :placeholder="$t('uiTemplate.SRSJYMC')" />
         </Form-item>
+        <!-- 数据源描述 -->
         <Form-item :label="$t('uiTemplate.SJYMS')" prop="desc">
             <wb-input v-model="sourceForm.desc" :placeholder="$t('uiTemplate.TXXQMS')" />
         </Form-item>
+        <!-- 数据源属主 -->
         <Form-item :label="$t('uiTemplate.SJYSZ')" prop="owner">
             <Wb-select v-model="sourceForm.owner">
                 <wb-option v-for="dsOwner in dsOwners" :key="dsOwner.id" :value="dsOwner.ownerName"
                            :label="dsOwner.ownerName" />
             </Wb-select>
         </Form-item>
+        <!-- 连接模板 -->
         <Form-item :label="$t('uiTemplate.LJMB')" prop="sourceTemplate">
             <Wb-select v-model="sourceForm.templateId" class="template-selecct">
                 <wb-option v-for="item in sourceTemplateList" :key="item.id" :value="item.id" :label="item.modelName" />
@@ -53,11 +23,13 @@
             <span class="refresh" @click="refreshTemplate">{{ $t('uiTemplate.SX') }}</span>
             <span class="create-template" @click="createTemplate">{{ $t('uiTemplate.CJMB') }}</span>
         </Form-item>
+        <!-- 绑定项目 -->
         <Form-item v-if="checkAuthority(sourceForm)" :label="$t('uiTemplate.BDXM')" prop="bindProject">
             <Wb-select v-model="sourceForm.bindProject">
                 <wb-option v-for="item in projectDataList" :key="item.id" :value="item.id" :label="item.projectName" />
             </Wb-select>
         </Form-item>
+        <!-- 对外权限 -->
         <Form-item v-if="isOwnerOrAdmin(sourceForm)" :label="$t('uiTemplate.DWQX')">
             <Checkbox-group v-model="sourceForm.authScopes">
                 <Checkbox v-show="false" value="READ" disabled>
@@ -118,15 +90,16 @@
                 <Wb-input v-model="sourceForm.userName" />
             </Form-item>
             <Form-item :label="$t('uiTemplate.MA')" prop="userPassword">
-                <Wb-input v-model="sourceForm.userPassword" type="password" />
+                <Wb-input v-model="sourceForm.userPassword" />
             </Form-item>
         </div>
         <Form-item>
+            <!-- 连接测试 -->
             <Wb-button ref="check_button" type="primary" :disabled="activeType === 'detail'" @click="connCheck">
-                {{ $t('uiTemplate.LJCS') }}
+                {{ $t('uiTemplate.LJCS') }} 
             </Wb-button>
             <Wb-button v-if="activeType == 'add'" ref="create_button" type="primary" class="float-right" :disabled="buttonDisable" @click="sourceCreate">
-                {{ $t('uiTemplate.SUBMIT') }}
+                {{ $t('uiTemplate.SUBMIT') }} 
             </Wb-button>
             <Wb-button v-else ref="update_button" type="primary" class="float-right" :disabled="buttonDisable || activeType === 'detail'" @click="sourceUpdate">
                 {{ $t('uiTemplate.GX') }}
@@ -218,7 +191,6 @@ export default {
         }
     },
     created() {
-
         this.init().then((res) => {
             this.sourceTemplateList = res[0] || [];
             this.dsOwners = res[1];
@@ -367,7 +339,7 @@ export default {
             return data.createUser === this.userName || ['super', 'admin'].includes(userRole);
         },
         checkAuthority(data, type = '') {
-            const userRole = this.FesStorage.get('userRole');
+            const userRole = this.FesStorage.get('userRole'); // 默认是sessionStorage
             if (data.createUser === this.userName || ['super', 'admin'].includes(userRole) || this.activeType === 'add') {
                 return true;
             } else {
@@ -381,3 +353,36 @@ export default {
     }
 }
 </script>
+<style scoped lang="scss">
+    .margin-bottom {
+        margin-bottom: 10px;
+        .icon-plus {
+            cursor: pointer;
+        }
+        .text-dec {
+            text-align: left;
+            margin-left: 5px;
+        }
+    }
+    .display-none {
+        padding-bottom: 0px;
+        display: none;
+    }
+    .float-right {
+        float: right;
+        margin-right: 25px;
+    }
+    .template-selecct {
+        width: 70%;
+    }
+    .refresh {
+        padding: 3px 6px;
+        margin-right: 10px;
+        color: #3399ff;
+        cursor: pointer;
+    }
+    .create-template {
+        color: #3399ff;
+        cursor: pointer;
+    }
+</style>
