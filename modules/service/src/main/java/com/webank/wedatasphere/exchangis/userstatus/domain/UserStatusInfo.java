@@ -12,6 +12,15 @@ public class UserStatusInfo {
     private  String start_time;
     private  String end_time;
     private  String unsub_time;
+    private  int status;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     public String getUnsub_time() {
         return unsub_time;

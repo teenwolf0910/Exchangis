@@ -43,16 +43,11 @@ public class UserStatusController extends ExceptionResolverContext {
         }
         else {
             UserStatusInfo userStatusInfo = userStatusService.searchUser(userId);
-            String end_time = userStatusInfo.getEnd_time();
-            String unsub_time=userStatusInfo.getUnsub_time();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date endTime  = format.parse(end_time);
-            Date nowTime = new Date();
-            if(nowTime.compareTo(endTime)<0&&unsub_time==null){
-                return  new Response<>().successResponse("该用户可用该服务");
-            }
-            else {
-                return  new Response<>().successResponse("该用户服务已到期");
+            int status = userStatusInfo.getStatus();
+            if(status==1)
+            return new Response<>().successResponse("用户可用");
+            else{
+                return  new Response<>().successResponse("用户暂不可用");
             }
         }
     }
@@ -71,6 +66,8 @@ public class UserStatusController extends ExceptionResolverContext {
     //处理用户工单信息
     @RequestMapping(value = "/process", method = {RequestMethod.POST})
     public Response<Object> construction(@Valid @RequestBody WorkInfo workInfo) throws  Exception {
+        int cycleCnt=0;
+        int     cycleType = 0;
         UserStatusInfo userStatusInfo=new UserStatusInfo();
         WorkOrderInfo workOrderInfo = new WorkOrderInfo();
         String userId = workInfo.getUserId();
@@ -78,15 +75,17 @@ public class UserStatusController extends ExceptionResolverContext {
         userStatusInfo.setUser_id(userId);
         userStatusInfo.setAccount_id(accountId);
         int workOrderType = workInfo.getWorkOrderType();
-        int cycleCnt = workInfo.getWorkOrderItems().get(0).getWorkOrderItemConfig().getCycleCnt();
-        int cycleType = workInfo.getWorkOrderItems().get(0).getWorkOrderItemConfig().getCycleType();
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar calendar=Calendar.getInstance();
         workOrderInfo.setUser_id(userId);
         workOrderInfo.setWorkOrder_id(workInfo.getWorkOrderId());
         workOrderInfo.setWorkOrder_type(workInfo.getWorkOrderType());
-        workOrderInfo.setCycleCnt(cycleCnt);
-        workOrderInfo.setCycleType(cycleType);
+        if(workOrderType==1||workOrderType==2||workOrderType==5){
+            cycleCnt = workInfo.getWorkOrderItems().get(0).getWorkOrderItemConfig().getCycleCnt();
+            cycleType = workInfo.getWorkOrderItems().get(0).getWorkOrderItemConfig().getCycleType();
+            workOrderInfo.setCycleCnt(cycleCnt);
+            workOrderInfo.setCycleType(cycleType);
+        }
         workOrderInfo.setAccount_id(workInfo.getAccountId());
         workOrderInfo.setMasterOrder_id(workInfo.getMasterOrderId());
         workOrderInfo.setServiceTag(workInfo.getServiceTag());
@@ -94,8 +93,7 @@ public class UserStatusController extends ExceptionResolverContext {
         workOrderInfo.setResourceType(workInfo.getResourceType());
         workOrderInfo.setWorkerOrderConfig(workInfo.getWorkOrderConfig());
         workOrderInfo.setWorkOrderItems(JSON.toJSONString(workInfo.getWorkOrderItems().get(0)));
-        workOrderInfo.setOperTime(sdf.format(new Date()));
-        userStatusService.insertWorkOrder(workOrderInfo);
+
         //订购
         if(workOrderType==1){
             String nowTime=sdf.format(new Date());
@@ -124,18 +122,25 @@ public class UserStatusController extends ExceptionResolverContext {
             userStatusInfo.setStart_time(nowTime);
             userStatusInfo.setEnd_time(endTime);
             userStatusInfo.setUnsub_time(null);
+            userStatusInfo.setStatus(1);
             if(userStatusService.searchUser(userId)!=null){
                 userStatusService.updateUser(userStatusInfo);
             }
             else {
                 userStatusService.addUser(userStatusInfo);
             }
-
+            workOrderInfo.setOperTime(nowTime);
+            workOrderInfo.setExpireTime(endTime);
+            workOrderInfo.setStatus(1);
+            userStatusService.insertWorkOrder(workOrderInfo);
             return new Response<>().successResponse("订购成功");
         }
         //2.续订
         if(workOrderType==2){
             UserStatusInfo user = userStatusService.searchUser(userId);
+            if(user==null){
+                return new Response<>().successResponse("请先开通账号");
+            }
             String end_time = user.getEnd_time();
             Date date = sdf.parse(end_time);
             String endTime="";
@@ -160,24 +165,52 @@ public class UserStatusController extends ExceptionResolverContext {
                 Date time = calendar.getTime();
                 endTime= sdf.format(time);
             }
-            userStatusService.updateUserByUserId(userId,endTime);
+            userStatusService.insertWorkOrder(workOrderInfo);
+            userStatusService.updateWorkOrderInfo(userId,workInfo.getResourceId(),endTime,1);
+            userStatusService.updateUserByUserId(userId,endTime,1);
             return new Response<>().successResponse("续订成功");
         }
         //3.退订
-        if(workOrderType==3){
+        if(workOrderType==5){
+            UserStatusInfo user = userStatusService.searchUser(userId);
+            if(user==null){
+                return new Response<>().successResponse("请先开通账号");
+            }
             calendar.setTime(new Date());
             calendar.add(Calendar.MINUTE,-1);
             Date time = calendar.getTime();
             String unsubTime = sdf.format(time);
-            userStatusService.unsubUserByUserId(userId,unsubTime);
+            userStatusService.insertWorkOrder(workOrderInfo);
+            userStatusService.unsubUserByUserId(userId,unsubTime,0);
+            userStatusService.updateWorkOrderInfo(userId,workInfo.getResourceId(),unsubTime,0);
             return new Response<>().successResponse("退订成功");
         }
-        if(workOrderType==6 || workOrderType==7){
+        if(workOrderType==6 ){
+            UserStatusInfo user = userStatusService.searchUser(userId);
+            if(user==null){
+                return new Response<>().successResponse("请先开通账号");
+            }
             calendar.setTime(new Date());
             calendar.add(Calendar.MINUTE,-1);
             Date time = calendar.getTime();
             String nowTime = sdf.format(time);
-            userStatusService.updateUserByUserId(userId,nowTime);
+            userStatusService.insertWorkOrder(workOrderInfo);
+            userStatusService.updateUserByUserId(userId,nowTime,0);
+            userStatusService.updateWorkOrderInfo(userId,workInfo.getResourceId(),nowTime,0);
+            return new Response<>().successResponse("用户已到期");
+        }
+        if( workOrderType==7){
+            UserStatusInfo user = userStatusService.searchUser(userId);
+            if(user==null){
+                return new Response<>().successResponse("请先开通账号");
+            }
+            calendar.setTime(new Date());
+            calendar.add(Calendar.MINUTE,-1);
+            Date time = calendar.getTime();
+            String nowTime = sdf.format(time);
+            userStatusService.insertWorkOrder(workOrderInfo);
+            userStatusService.updateUserByUserId(userId,nowTime,0);
+            userStatusService.updateWorkOrderInfo(userId,workInfo.getResourceId(),nowTime,0);
             return new Response<>().successResponse("用户已到期");
         }
         return  null;

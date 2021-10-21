@@ -36,13 +36,18 @@ public class UserStatusServiceImpl implements UserStatusService {
     }
 
     @Override
-    public void updateUserByUserId(String user_id, String endTime) {
-        userStatusInfoDao.updateUserByUserId(user_id,endTime);
+    public void updateUserByUserId(String user_id, String endTime,int status) {
+        userStatusInfoDao.updateUserByUserId(user_id,endTime,status);
     }
 
     @Override
-    public void unsubUserByUserId(String user_id, String unsubTime) {
-        userStatusInfoDao.unsubUserByUserId(user_id,unsubTime);
+    public void unsubUserByUserId(String user_id, String unsubTime,int status) {
+        userStatusInfoDao.unsubUserByUserId(user_id,unsubTime,status);
+    }
+
+    @Override
+    public void updateWorkOrderInfo(String user_id, String resource_id,String expireTime,int status) {
+        userStatusInfoDao.updateWorkOrderInfo(user_id,resource_id,expireTime,status);
     }
 
     @Override

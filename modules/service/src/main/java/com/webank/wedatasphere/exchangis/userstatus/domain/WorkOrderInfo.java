@@ -20,6 +20,26 @@ public class WorkOrderInfo {
     private  String workerOrderConfig;
     private  String workOrderItems;
     private  String operTime;
+    private String expireTime;
+    private  int status;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(String expireTime) {
+        this.expireTime = expireTime;
+    }
+
+
 
     public String getOperTime() {
         return operTime;

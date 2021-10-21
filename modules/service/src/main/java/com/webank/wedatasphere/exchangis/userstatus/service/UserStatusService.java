@@ -17,8 +17,9 @@ public interface UserStatusService {
     public  void construction(WorkInfo workInfo);
     public  void addUser(UserStatusInfo userStatusInfo);
     public  UserStatusInfo searchUser(String user_id);
-    public  void  updateUserByUserId(String user_id,String endTime);
-    public  void  unsubUserByUserId(String user_id,String unsubTime);
+    public  void  updateUserByUserId(String user_id,String endTime,int status);
+    public  void  unsubUserByUserId(String user_id,String unsubTime,int status);
+    public  void updateWorkOrderInfo(String user_id,String resource_id,String expireTime,int status);
     public  void  updateUser(UserStatusInfo userStatusInfo);
     public  void deleteUser(UserStatusInfo userStatusInfo);
     public void  insertWorkOrder(WorkOrderInfo workOrderInfo);
