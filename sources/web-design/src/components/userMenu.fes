@@ -1,0 +1,66 @@
+<template>
+  <ul
+    class="user-menu">
+    <li class="user-menu-arrow"/>
+    <li
+      class="user-menu-item"
+      v-for="(menu) in menuList"
+      :key="menu.id"
+      @click="handleClick(menu.id)">
+      <Icon
+        class="user-menu-item-icon"
+        :type="menu.icon">
+      </Icon>
+      <span>{{ menu.name }}</span>
+    </li>
+  </ul>
+</template>
+<script>
+export default {
+    FesData: function () {
+        return {
+          menuList: [
+            {
+              id: 'changeLang',
+              name: localStorage.getItem('locale') === 'zh-CN' ? 'English' : '简体中文',
+              icon: 'md-repeat',
+            },
+            {
+              id: 'logout',
+              name: this.$t('message.common.logOut'),
+              icon: 'ios-log-out',
+            }
+          ],  
+        }
+    },
+    methods: {
+      handleClick(type) {
+        switch (type) {
+          case 'logout':
+            this.getRunningJob();
+            break;
+        }
+      },
+      getRunningJob() {
+        this.logout();
+      },
+      logout(){
+        this.FesApp.setRole('unLogin')
+        this.FesStorage.set('userLogin', false)
+        this.FesApp.set('FesUserName', '');
+        this.FesApp.set('FesRoleName', '');
+        this.FesStorage.set('currentUser', '');
+        this.FesStorage.set('userRole', '');
+        this.FesApi.fetch('/logout', {}, 'post').then(() => {
+          console.log(`[${this.$t('components.TCCG')}]`);
+        }).catch(()=>{
+          location.href = "https://www.ctyun.cn/logout"
+          // window.Toast(this.$t('components.DCXTSB'));
+        })
+      }
+    }
+}
+</script>
+<style scoped lang="scss">
+  @import '../assets/styles/header/headerUserMenu.scss';
+</style>
