@@ -43,6 +43,8 @@ public interface UserInfoService extends IBaseService<UserInfo> {
     UserInfo selectByUsername(String userName);
 
     UserInfo selectDetailByUsername(String userName);
+
+    String selectIp(String ipAddress);
     /**
      * Find executive user by app user
      * @param appUserId

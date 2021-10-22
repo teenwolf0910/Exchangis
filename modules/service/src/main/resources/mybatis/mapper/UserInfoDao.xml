@@ -86,6 +86,8 @@
         <include refid="detail_columns"/>
         <![CDATA[ FROM exchangis_user_info WHERE username = #{userName};]]>
     </select>
+
+
     <select id="selectByUsernameList" parameterType="java.util.List" resultMap="resultUser">
         SELECT
         <include refid="columns"/>

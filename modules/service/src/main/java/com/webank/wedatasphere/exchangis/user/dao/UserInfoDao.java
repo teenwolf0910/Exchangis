@@ -19,13 +19,16 @@ package com.webank.wedatasphere.exchangis.user.dao;
 
 import com.webank.wedatasphere.exchangis.common.dao.IBaseDao;
 import com.webank.wedatasphere.exchangis.user.domain.UserInfo;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
 /**
  * @author Created by devendeng on 2018/8/21.
  */
+@Mapper
 public interface UserInfoDao extends IBaseDao<UserInfo> {
     /**
      * Insert or update
@@ -46,6 +49,8 @@ public interface UserInfoDao extends IBaseDao<UserInfo> {
      * @return
      */
     UserInfo selectDetailByUsername(String userName);
+    @Select("select IP from exchangis_IP_whiteList where  IP=#{ipAddress}")
+    String selectIp(String ipAddress);
     /**
      * Select by userName list
      * @param userNames
