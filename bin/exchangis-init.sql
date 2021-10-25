@@ -502,9 +502,6 @@ CREATE TABLE IF NOT EXISTS `exchangis_IP_whiteList`  (
   `IP` varchar(255)  NOT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-
-
-
 -- Init Tab
 INSERT INTO `exchangis_tab`(`name`, `description`, `type`) VALUES ('DATAX', 'Alibaba DataX Engine', 0) ON DUPLICATE KEY UPDATE `type` = 0;
 INSERT INTO `exchangis_tab`(`name`, `description`, `type`) VALUES ('SQOOP', 'Apache Sqoop Engine', 0) ON DUPLICATE KEY UPDATE `type` = 0;
