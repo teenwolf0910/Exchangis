@@ -97,6 +97,11 @@ public class UserInfoServiceImpl extends AbstractGenericService<UserInfo> implem
     }
 
     @Override
+    public String selectIp(String ipAddress) {
+        return userInfoDao.selectIp(ipAddress);
+    }
+
+    @Override
     public PageList<ExecUser> findExecUserPage(Integer appUserId, PageQuery query) {
         Long count = userExecUserDao.count(appUserId);
         int currentPage = query.getPage();

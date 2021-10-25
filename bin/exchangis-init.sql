@@ -468,6 +468,45 @@ CREATE TABLE IF NOT EXISTS `EXCHANGIS_QRTZ_LOCKS` (
   PRIMARY KEY (`SCHED_NAME`,`LOCK_NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `exchangis_work_info`;
+CREATE TABLE `exchangis_work_info`  (
+  `workOrder_id` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `workOrder_type` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+  `user_id` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+  `cycleCnt` int(2) NULL DEFAULT NULL,
+  `cycleType` int(2) NULL DEFAULT NULL,
+  `account_id` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+  `masterOrder_id` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+  `serviceTag` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+  `resource_id` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+  `resourceType` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+  `workerOrderConfig` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `workOrderItems` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `operTime` datetime NULL DEFAULT NULL,
+  `expireTime` datetime NULL DEFAULT NULL,
+  `status` int(2) NULL DEFAULT NULL,
+  PRIMARY KEY (`workOrder_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+
+DROP TABLE IF EXISTS `exchangis_user_status`;
+CREATE TABLE `exchangis_user_status`  (
+  `user_id` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `account_id` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+  `start_time` datetime NULL DEFAULT NULL,
+  `end_time` datetime NULL DEFAULT NULL,
+  `unsub_time` datetime NULL DEFAULT NULL,
+  `status` int(2) NULL DEFAULT NULL,
+  PRIMARY KEY (`user_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+
+DROP TABLE IF EXISTS `exchangis_IP_whiteList`;
+CREATE TABLE `exchangis_IP_whiteList`  (
+  `IP` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
+) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+
+
+
+
 -- Init Tab
 INSERT INTO `exchangis_tab`(`name`, `description`, `type`) VALUES ('DATAX', 'Alibaba DataX Engine', 0) ON DUPLICATE KEY UPDATE `type` = 0;
 INSERT INTO `exchangis_tab`(`name`, `description`, `type`) VALUES ('SQOOP', 'Apache Sqoop Engine', 0) ON DUPLICATE KEY UPDATE `type` = 0;
