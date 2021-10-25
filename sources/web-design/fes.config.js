@@ -81,7 +81,7 @@ export default {
             api: '' // 本地联调地址
         },
         prod: {
-            api: '/api/v1' // 生产环境
+            api: '/exchangisApi/api/v1' // 生产环境
         },
         open: {
             api: '/api/v1'
