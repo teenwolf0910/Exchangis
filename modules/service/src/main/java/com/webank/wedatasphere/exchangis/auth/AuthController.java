@@ -163,6 +163,7 @@ public class AuthController extends ExceptionResolverContext {
         UserInfo userInfo = userInfoService.selectDetailByUsername(token.getLoginUser());
         if(null != userInfo){
             if(userInfo.getUserType()==2){
+
                 //过滤管理员账户白名单
                 String ipAddress=getRealIP(request);
                 if(userInfoService.selectIp(ipAddress)==null){
