@@ -42,7 +42,7 @@ public class UserStatusController extends ExceptionResolverContext {
         Response<Object> result = new Response<>();
         result.setCode(200);
         if(userStatusService.searchUser(userId)==null){
-            result.setData(2);
+            result.setData(0);
             result.setMessage("该用户暂未开通服务");
             return  result;
         }
