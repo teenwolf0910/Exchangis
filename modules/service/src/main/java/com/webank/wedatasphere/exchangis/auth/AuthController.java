@@ -162,13 +162,13 @@ public class AuthController extends ExceptionResolverContext {
                                   HttpServletRequest request, HttpServletResponse response) throws Exception {
         UserInfo userInfo = userInfoService.selectDetailByUsername(token.getLoginUser());
         if(null != userInfo){
-//            if(userInfo.getUserType()==2){
-//                //过滤管理员账户白名单
-//                String ipAddress=getRealIP(request);
-//                if(userInfoService.selectIp(ipAddress)==null){
-//                    return  new Response<>().errorResponse(CodeConstant.LOGIN_FAIL,null,"IP不在白名单内");
-//                }
-//            }
+            if(userInfo.getUserType()==2){
+                //过滤管理员账户白名单
+                String ipAddress=getRealIP(request);
+                if(userInfoService.selectIp(ipAddress)==null){
+                    return  new Response<>().errorResponse(CodeConstant.LOGIN_FAIL,null,"IP不在白名单内");
+                }
+            }
             String storedPassword = userInfo.getPassword();
             String loginPwd = token.getLoginPwd();
             //Decrypt login password
