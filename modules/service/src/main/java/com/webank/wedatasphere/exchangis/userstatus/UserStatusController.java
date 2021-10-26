@@ -43,7 +43,7 @@ public class UserStatusController extends ExceptionResolverContext {
         result.setCode(200);
         if(userStatusService.searchUser(userId)==null){
             result.setData(0);
-            result.setMessage("该用户暂未开通服务");
+            result.setMessage("没有找到该用户");
             return  result;
         }
         else {
