@@ -58,12 +58,35 @@ export default function () {
     this.FesApi.setError({
         302: function (response) {
             let res = response.data;
-            that.FesApp.router.push('/login');
+            console.log('res', res.data);
+            if (res.data && res.data.redirect && /^https?:/.test(res.data.redirect)) {
+                debounce(()=>{
+                    window.open(res.data.redirect);
+                })
+            } else {
+                that.FesApp.router.push('/login');
+            }
         },
         401: function (response) {
             window.Toast('未授权操作')
         }
     });
+
+    const debounce = (fn, delay = 500)=> {
+        // timer 是在闭包中的
+        let timer = null;
+        
+        return function () {
+            if (timer) {
+                clearTimeout(timer)
+            }
+            timer = setTimeout(() => {
+                fn.apply(this, arguments)
+                timer = null
+            }, delay)
+        }
+    }
+    
     this.on('fes_logout', () => {
         api.fetch('/logout', {}, 'post').then(() => {
             console.log('[退出成功]');
