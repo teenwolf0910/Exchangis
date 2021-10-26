@@ -468,7 +468,6 @@ CREATE TABLE IF NOT EXISTS `EXCHANGIS_QRTZ_LOCKS` (
   PRIMARY KEY (`SCHED_NAME`,`LOCK_NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE IF NOT EXISTS `exchangis_work_info`  (
   `workOrder_id` varchar(100)  NOT NULL,
   `workOrder_type` varchar(100)   DEFAULT NULL,
