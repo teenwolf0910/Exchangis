@@ -51,7 +51,7 @@ public class UserStatusController extends ExceptionResolverContext {
             int status = userStatusInfo.getStatus();
             if(status==1){
                 result.setData(1);
-                result.setMessage("用户可用");
+                result.setMessage("用户已开通服务");
                 return  result;
             }
             else{
@@ -69,7 +69,7 @@ public class UserStatusController extends ExceptionResolverContext {
         result.setCode(200);
         if(userStatusService.searchWorkInfo(userId)==null){
             result.setData(" ");
-            result.setMessage("该用户暂无订单信息");
+            result.setMessage("没有找到该用户");
             return  result;
         }
         else {
