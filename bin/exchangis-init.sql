@@ -74,7 +74,6 @@ CREATE TABLE IF NOT EXISTS `exchangis_executor_node_tab` (
   KEY `tab_name` (`tab_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE IF NOT EXISTS `exchangis_executor_node_user` (
   `exec_node_id` int(11) NOT NULL COMMENT 'Excutor Node ID',
   `exec_user` varchar(50) NOT NULL COMMENT 'Executive User',
