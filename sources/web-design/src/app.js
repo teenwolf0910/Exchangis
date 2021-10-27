@@ -58,7 +58,11 @@ export default function () {
     this.FesApi.setError({
         302: function (response) {
             let res = response.data;
-            that.FesApp.router.push('/login');
+            if (res && res.redirect && res.redirect.startsWith('http')) {
+                location.href = res.redirect;
+            } else {
+                that.FesApp.router.push('/login');
+            }
         },
         401: function (response) {
             window.Toast('未授权操作')
@@ -80,6 +84,19 @@ export default function () {
                 this.FesApp.set('FesRoleName', roleName(res.role));
                 this.FesStorage.set('currentUser', res['X-AUTH-ID']);
                 this.FesStorage.set('userRole', res.role);
+                // ctyun sso登录过来带有userId
+                if (res['X-USER-ID']) {
+                    api.fetch(`/exchangis/status/${res['X-USER-ID']}`, {}, 'get').then((res) => {
+                        if (!(res && res.data)) {
+                            window.Toast(res.message || '服务不可用');
+                            setTimeout(() => {
+                                location.href = 'www.ctyun.cn'
+                            }, 1500)
+                        }
+                    }).catch(e => {
+                        console.error(e);
+                    });
+                }
             } else {
                 this.setRole('unLogin');
                 this.FesStorage.set('currentUser', 'guest');
