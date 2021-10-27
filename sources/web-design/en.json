@@ -1,5 +1,9 @@
 {
     "message": {
+        "common": {
+            "logoName": "Luban",
+            "logOut": "Log out"
+        },
         "newAllPage": {
             "Projectbuttoncomponent": "Project button component",
             "Onlysupertubeandadministratorshaveaddpermissions": "Only super tube and administrators have add permissions",
