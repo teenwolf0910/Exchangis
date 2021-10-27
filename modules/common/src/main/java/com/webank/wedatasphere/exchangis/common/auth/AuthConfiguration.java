@@ -74,6 +74,9 @@ public class AuthConfiguration {
     @Value("${auth.redirect.url:/udes/auth/redirect}")
     private String authRedirectUrl;
 
+    @Value("${auth.workOrder.url:/udes/exchangis/process}")
+    private String authWorkOrderUrl;
+
     @Value("${auth.ctyun.cas.enable:false}")
     private Boolean ctyunCasEnable;
 
@@ -154,6 +157,10 @@ public class AuthConfiguration {
 
     public String authRedirectUrl(){
         return authRedirectUrl;
+    }
+
+    public String authWorkOrderUrl(){
+        return authWorkOrderUrl;
     }
 
     public String authSecret(){

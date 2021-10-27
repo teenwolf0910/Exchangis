@@ -468,6 +468,39 @@ CREATE TABLE IF NOT EXISTS `EXCHANGIS_QRTZ_LOCKS` (
   PRIMARY KEY (`SCHED_NAME`,`LOCK_NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `exchangis_work_info`  (
+  `workOrder_id` varchar(100)  NOT NULL,
+  `workOrder_type` varchar(100)   DEFAULT NULL,
+  `user_id` varchar(100)  DEFAULT NULL,
+  `cycleCnt` int(2)  DEFAULT NULL,
+  `cycleType` int(2)  DEFAULT NULL,
+  `account_id` varchar(100)  DEFAULT NULL,
+  `masterOrder_id` varchar(100)  DEFAULT NULL,
+  `serviceTag` varchar(50)  DEFAULT NULL,
+  `resource_id` varchar(100)  DEFAULT NULL,
+  `resourceType` varchar(50)  DEFAULT NULL,
+  `workerOrderConfig` varchar(255) DEFAULT NULL,
+  `workOrderItems` varchar(1000)  DEFAULT NULL,
+  `operTime` datetime  DEFAULT NULL,
+  `expireTime` datetime  DEFAULT NULL,
+  `status` int(2)  DEFAULT NULL,
+  PRIMARY KEY (`workOrder_id`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `exchangis_user_status`  (
+  `user_id` varchar(100)  NOT NULL,
+  `account_id` varchar(100)  DEFAULT NULL,
+  `start_time` datetime  DEFAULT NULL,
+  `end_time` datetime  DEFAULT NULL,
+  `unsub_time` datetime  DEFAULT NULL,
+  `status` int(2)  DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `exchangis_IP_whiteList`  (
+  `IP` varchar(255)  NOT NULL
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 -- Init Tab
 INSERT INTO `exchangis_tab`(`name`, `description`, `type`) VALUES ('DATAX', 'Alibaba DataX Engine', 0) ON DUPLICATE KEY UPDATE `type` = 0;
 INSERT INTO `exchangis_tab`(`name`, `description`, `type`) VALUES ('SQOOP', 'Apache Sqoop Engine', 0) ON DUPLICATE KEY UPDATE `type` = 0;

@@ -67,6 +67,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor{
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(conf.enable() && !request.getRequestURI().equals(conf.authLoginUrl()) &&
                                 !request.getRequestURI().equals(conf.authRedirectUrl()) &&
+                                !request.getRequestURI().equals("/api/v1/exchangis/process") &&
                                 !conf.getCtyunCasLoginURI().equals(request.getRequestURI()) ){
             if(null == authTokenService){
                 authTokenService = AppUtil.getBean(AuthTokenService.class);

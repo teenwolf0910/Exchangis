@@ -1,0 +1,70 @@
+package com.webank.wedatasphere.exchangis.userstatus.service.impl;
+
+import com.webank.wedatasphere.exchangis.userstatus.dao.UserStatusInfoDao;
+import com.webank.wedatasphere.exchangis.userstatus.domain.UserStatusInfo;
+import com.webank.wedatasphere.exchangis.userstatus.domain.WorkInfo;
+import com.webank.wedatasphere.exchangis.userstatus.domain.WorkOrderInfo;
+import com.webank.wedatasphere.exchangis.userstatus.service.UserStatusService;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * @ClassName: UserStatusServiceImpl
+ * @Description:
+ * @author: lijw
+ * @date: 2021/10/13 10:09
+ */
+@Service
+public class UserStatusServiceImpl implements UserStatusService {
+    @Resource
+    UserStatusInfoDao userStatusInfoDao;
+    @Override
+    public void construction(WorkInfo workInfo) {
+
+    }
+
+    @Override
+    public void addUser(UserStatusInfo userStatusInfo) {
+        userStatusInfoDao.addUser(userStatusInfo);
+    }
+
+    @Override
+    public UserStatusInfo searchUser(String user_id) {
+        return userStatusInfoDao.searchUser(user_id);
+    }
+
+    @Override
+    public void updateUserByUserId(String user_id, String endTime,int status) {
+        userStatusInfoDao.updateUserByUserId(user_id,endTime,status);
+    }
+
+    @Override
+    public void unsubUserByUserId(String user_id, String unsubTime,int status) {
+        userStatusInfoDao.unsubUserByUserId(user_id,unsubTime,status);
+    }
+
+    @Override
+    public void updateWorkOrderInfo(String user_id, String resource_id,String expireTime,int status) {
+        userStatusInfoDao.updateWorkOrderInfo(user_id,resource_id,expireTime,status);
+    }
+
+    @Override
+    public void updateUser(UserStatusInfo userStatusInfo) { userStatusInfoDao.updateUser(userStatusInfo); }
+
+    @Override
+    public void deleteUser(UserStatusInfo userStatusInfo) {
+        userStatusInfoDao.deleteUser(userStatusInfo);
+    }
+
+    @Override
+    public void insertWorkOrder(WorkOrderInfo workOrderInfo) {
+        userStatusInfoDao.insertWorkOrder(workOrderInfo);
+    }
+
+    @Override
+    public List<WorkOrderInfo> searchWorkInfo(String user_id) {
+        return userStatusInfoDao.searchWorkInfo(user_id);
+    }
+}

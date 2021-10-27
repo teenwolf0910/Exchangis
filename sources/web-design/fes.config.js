@@ -81,7 +81,8 @@ export default {
             api: '' // 本地联调地址
         },
         prod: {
-            api: '/api/v1' // 生产环境
+            // api: '/api/v1' // 生产环境
+            api: '/exchangis/api/v1' // 生产环境，上云版本需要走saas.ctyun.cn代理，所以接口必须加前缀
         },
         open: {
             api: '/api/v1'
