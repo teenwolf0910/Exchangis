@@ -78,11 +78,10 @@ export default {
     ],
     env: {
         local: {
-            api: '' // 本地联调地址
+            api: 'http://localhost:9503/api/v1' // 本地联调地址
         },
         prod: {
-            // api: '/api/v1' // 生产环境
-            api: '/exchangis/api/v1' // 生产环境，上云版本需要走saas.ctyun.cn代理，所以接口必须加前缀
+            api: '/api/v1' // 生产环境
         },
         open: {
             api: '/api/v1'
