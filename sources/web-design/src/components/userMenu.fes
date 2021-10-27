@@ -22,7 +22,7 @@ export default {
           menuList: [
             {
               id: 'changeLang',
-              name: localStorage.getItem('locale') === 'zh-CN' ? 'English' : '简体中文',
+              name: localStorage.getItem('lang') === 'en' ? '简体中文' : 'English',
               icon: 'md-repeat',
             },
             {
@@ -39,10 +39,24 @@ export default {
           case 'logout':
             this.getRunningJob();
             break;
+          case 'changeLang':
+            this.languageSwitching();
+            break;
         }
       },
       getRunningJob() {
         this.logout();
+      },
+      languageSwitching() {
+        const lang = localStorage.getItem('lang');
+        if (lang === 'en') {
+            this.FesApp.setLocale('zh-cn')
+            localStorage.setItem('lang', 'zh-cn')
+        } else {
+            this.FesApp.setLocale('en')
+            localStorage.setItem('lang', 'en')
+        }
+        window.location.reload();
       },
       logout(){
         this.FesApp.setRole('unLogin')
