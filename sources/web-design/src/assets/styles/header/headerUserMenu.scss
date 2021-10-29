@@ -1,0 +1,35 @@
+@charset "utf-8";
+@import "./default.scss";
+
+.user-menu {
+  background-color: $background-color-header;
+  width: 130px;
+  border: none;
+  position: $absolute;
+  top: 53px;
+  left: 50%;
+  margin-left: -72px;
+  border-radius: 0 0 $border-radius-small $border-radius-small;
+  z-index: 10;
+
+  .user-menu-item {
+      list-style: none;
+      padding-left: 20px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      font-size: $font-size-base;
+      &:hover {
+          color: $body-background;
+          background-color: $background-color-header;
+          color: $primary-color;
+          border-top: none;
+          border-radius: $border-radius-small;
+      }
+      .user-menu-item-icon {
+          font-size: $font-size-large;
+          font-weight: bold;
+      }
+  }
+}

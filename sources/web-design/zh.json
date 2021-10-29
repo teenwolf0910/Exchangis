@@ -1,5 +1,9 @@
 {
     "message": {
+        "common": {
+            "logoName": "鲁班",
+            "logOut": "退出登录"
+        },
         "newAllPage": {
             "Projectbuttoncomponent": "项目按钮组件",
             "Onlysupertubeandadministratorshaveaddpermissions": "只有超管和管理员有添加权限",

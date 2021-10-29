@@ -1,0 +1,65 @@
+<template>
+  <div>
+    <!-- layoutHeader -->
+    <div v-if="$route.path != '/login'" class="layout-header">
+      <div class="layout-header-menu-icon">
+        <div class="logo">
+          <img
+            class="logo-img"
+            src="../assets/images/dssLogo5_1.png"
+            :alt="$t('message.common.logoName')"
+          >
+          <span class="version">{{sysVersion}}</span>
+        </div>
+      </div>
+      <div
+        v-clickoutside="handleOutsideClick"
+        :class="{'selected': isUserMenuShow}"
+        class="user"
+        @click="handleUserClick"
+      >
+        <div class="userName">
+          <span>{{ userName || 'Null' }}</span>
+          <Icon v-show="!isUserMenuShow" type="ios-arrow-down" class="user-icon"/>
+          <Icon v-show="isUserMenuShow" type="ios-arrow-up" class="user-icon"/>
+        </div>
+        <userMenu v-show="isUserMenuShow"/>
+      </div>
+    </div>
+
+    <!-- 承载容器 -->
+    <router-view />
+  </div>
+</template>
+<script>
+import clickoutside from "../constants/clickoutside"
+
+export default {
+  directives: {
+    clickoutside
+  },
+  FesCreated(){
+    this.FesApp.router.push("/ds/newManager")
+  },
+  FesData: function () {
+    return {
+      isUserMenuShow: false,
+      sysVersion: "v1.2.0"   
+    }
+  },
+  computed: {
+    userName() {
+        return this.FesApp.get('FesUserName')
+    }
+  },
+  methods: {
+    handleOutsideClick(){
+      this.isUserMenuShow = false;
+    },
+    handleUserClick() {
+      this.isUserMenuShow = !this.isUserMenuShow;
+    }
+  }
+}
+</script>
+<style lang="scss" scoped src="../assets/styles/header/index.scss"></style>
