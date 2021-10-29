@@ -58,6 +58,7 @@ public class UserInfoSyncInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(conf.enable() && !request.getRequestURI().equals(conf.authLoginUrl()) &&
                                 !request.getRequestURI().equals("/api/v1/exchangis/process") &&
+                                !request.getRequestURI().equals("/api/v1/exchangis/status") &&
                                  !request.getRequestURI().equals(conf.authRedirectUrl()) &&
                                  !request.getRequestURI().equals(conf.getCtyunCasLoginURI())) {
             String token = AppUtil.getCookieValue(request, AuthConstraints.DEFAULT_SSO_COOKIE);

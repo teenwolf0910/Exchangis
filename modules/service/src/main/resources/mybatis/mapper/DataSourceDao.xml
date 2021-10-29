@@ -135,7 +135,7 @@
                 AND id = #{id}
             </if>
             <if test="sourceName != null and sourceName != ''">
-                AND source_name like CONCAT(#{sourceName}, '%')
+                AND source_name = #{sourceName}
             </if>
             <if test="sourceType != null and sourceType != ''">
                 AND source_type = #{sourceType}

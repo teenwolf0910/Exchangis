@@ -37,10 +37,9 @@ public class UserStatusController extends ExceptionResolverContext {
     @Resource
     UserStatusService userStatusService;
     //查询用户状态
-    @RequestMapping(value="/status/{userId}", method= RequestMethod.GET)
-    public Response<Object> serviceStatus(@Context HttpServletRequest request, @PathVariable("userId")String userId) throws  Exception{
+    @RequestMapping(value="/status", method= RequestMethod.GET)
+    public Response<Object> serviceStatus(@Context HttpServletRequest request,@RequestParam(value="userId", required=true) String userId) throws  Exception{
         Response<Object> result = new Response<>();
-        result.setCode(200);
         if(userStatusService.searchUser(userId)==null){
             result.setData(0);
             result.setMessage("没有找到该用户");
@@ -66,14 +65,18 @@ public class UserStatusController extends ExceptionResolverContext {
     @RequestMapping(value="/search/{userId}", method= RequestMethod.GET)
     public  Response<Object> searchWorkInfo(@Context HttpServletRequest request,@PathVariable("userId") String userId) throws  Exception{
         Response<Object> result = new Response<>();
-        result.setCode(200);
         if(userStatusService.searchWorkInfo(userId)==null){
             result.setData(" ");
             result.setMessage("没有找到该用户");
             return  result;
         }
         else {
-            result.setData(userStatusService.searchWorkInfo(userId));
+            List<WorkOrderInfo> workOrderInfos = userStatusService.searchWorkInfo(userId);
+            for (WorkOrderInfo workOrderInfo : workOrderInfos) {
+                workOrderInfo.setExpireTime(workOrderInfo.getExpireTime().substring(0,19));
+                workOrderInfo.setOperTime(workOrderInfo.getOperTime().substring(0,19));
+            }
+            result.setData(workOrderInfos);
             result.setMessage("success");
             return  result;
         }
@@ -83,7 +86,6 @@ public class UserStatusController extends ExceptionResolverContext {
     @RequestMapping(value = "/process", method = {RequestMethod.POST})
     public Response<Object> construction(@Valid @RequestBody WorkInfo workInfo) throws  Exception {
         Response<Object> result = new Response<>();
-        result.setCode(200);
         int cycleCnt=0;
         int     cycleType = 0;
         UserStatusInfo userStatusInfo=new UserStatusInfo();

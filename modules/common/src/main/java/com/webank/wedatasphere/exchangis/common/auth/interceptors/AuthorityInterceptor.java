@@ -63,6 +63,7 @@ public class AuthorityInterceptor implements HandlerInterceptor {
         if(conf.enable() && !request.getRequestURI().equals(conf.authLoginUrl())
                                 && !request.getRequestURI().equals(conf.authRedirectUrl())
                                 && !request.getRequestURI().equals("/api/v1/exchangis/process")
+                                && !request.getRequestURI().equals("/api/v1/exchangis/status")
                                 && !conf.getCtyunCasLoginURI().equals(request.getRequestURI())) {
             String token = AppUtil.getCookieValue(request, AuthConstraints.DEFAULT_SSO_COOKIE);
             LOG.info("ss:"+conf.getCtyunCasLoginURI()+"|"+request.getRequestURI()+"|"+!request.getRequestURI().equals(conf.getCtyunCasLoginURI()));

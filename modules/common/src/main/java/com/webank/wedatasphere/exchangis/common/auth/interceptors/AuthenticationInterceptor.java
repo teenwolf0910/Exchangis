@@ -68,6 +68,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor{
         if(conf.enable() && !request.getRequestURI().equals(conf.authLoginUrl()) &&
                                 !request.getRequestURI().equals(conf.authRedirectUrl()) &&
                                 !request.getRequestURI().equals("/api/v1/exchangis/process") &&
+                                !request.getRequestURI().equals("/api/v1/exchangis/status") &&
                                 !conf.getCtyunCasLoginURI().equals(request.getRequestURI()) ){
             if(null == authTokenService){
                 authTokenService = AppUtil.getBean(AuthTokenService.class);

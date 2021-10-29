@@ -38,6 +38,8 @@ public class AuthConstraints {
 
     public static final String HOST_PORT = "host_port";
 
+    public static final String X_USER_ID="X-USER-ID";
+
     public static final String TICKT_REFRESH_PARAM = "refresh_tk";
 
     public static final String SSO_TOKEN_TIMESTAMP = "tk-time";
